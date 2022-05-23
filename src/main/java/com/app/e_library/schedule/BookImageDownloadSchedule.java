@@ -15,14 +15,14 @@ public class BookImageDownloadSchedule {
         this.bookService = bookService;
     }
 
-//    @Scheduled(fixedRateString = "${job.imageDownloader.fixedRate}")
-//    public void downloadBookImages() throws IOException {
-//            bookService.downloadBooksImages();
-//    }
-//
-//    @Scheduled(fixedRateString = "${job.imageDownloader.failover.fixedRate}")
-//    public void handleBookImageFailOvers() throws IOException {
-//        bookService.handleFailover();
-//    }
+    @Scheduled(fixedRateString = "${job.imageDownloader.fixedRate}")
+    public void downloadBookImages() throws IOException {
+            bookService.downloadBooksImages();
+    }
+
+    @Scheduled(fixedRateString = "${job.imageDownloader.failover.fixedRate}")
+    public void handleBookImageFailOvers() throws IOException {
+        bookService.handleFailover();
+    }
 
 }

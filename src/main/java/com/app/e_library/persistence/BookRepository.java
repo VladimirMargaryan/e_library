@@ -1,7 +1,6 @@
 package com.app.e_library.persistence;
 
 import com.app.e_library.persistence.entity.BookEntity;
-import com.app.e_library.service.dto.BookDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
