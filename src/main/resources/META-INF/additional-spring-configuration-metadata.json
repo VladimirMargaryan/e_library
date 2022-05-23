@@ -1,0 +1,43 @@
+{
+  "properties": [
+    {
+      "name": "jwt.access_token.active.time",
+      "type": "java.time.Duration",
+      "description": "Description for jwt.access_token.active.time."
+    },
+    {
+      "name": "jwt.refresh_token.active.time",
+      "type": "java.time.Duration",
+      "description": "Description for jwt.refresh_token.active.time."
+    },
+    {
+      "name": "jwt.secret",
+      "type": "java.lang.String",
+      "description": "Description for jwt.secret."
+    },
+    {
+      "name": "book.image_folder.root",
+      "type": "java.lang.String",
+      "description": "Description for book.image_folder.root."
+    },
+    {
+      "name": "book.thumbnail_folder.root",
+      "type": "java.lang.String",
+      "description": "Description for book.thumbnail_folder.root."
+    },
+    {
+      "name": "job.imageDownloader.fixedDelay",
+      "type": "java.lang.String",
+      "description": "Description for job.imageDownloader.fixedDelay."
+    },
+    {
+      "name": "job.imageDownloader.fixedRate",
+      "type": "java.lang.String",
+      "description": "Description for job.imageDownloader.fixedRate."
+    },
+    {
+      "name": "job.imageDownloader.failover.fixedRate",
+      "type": "java.lang.String",
+      "description": "Description for job.imageDownloader.failover.fixedRate."
+    }
+  ] }
