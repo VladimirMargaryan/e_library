@@ -73,7 +73,7 @@ public class UserEntity {
     @Valid
     private Long resetPasswordTokenCreationDate;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "address_id", nullable = false)
     @NonNull
     @ToString.Exclude
@@ -94,7 +94,8 @@ public class UserEntity {
             targetEntity = PickDetailEntity.class,
             mappedBy = "usedByUser",
             cascade=CascadeType.ALL,
-            fetch = FetchType.LAZY)
+            fetch = FetchType.LAZY,
+            orphanRemoval = true)
     @ToString.Exclude
     private List<PickDetailEntity> pickedBookDetails;
 
@@ -102,7 +103,8 @@ public class UserEntity {
             targetEntity = PickDetailEntity.class,
             mappedBy = "reservedByUser",
             cascade=CascadeType.ALL,
-            fetch = FetchType.LAZY)
+            fetch = FetchType.LAZY,
+            orphanRemoval = true)
     @ToString.Exclude
     private List<PickDetailEntity> reservedBookDetails;
 
@@ -110,7 +112,8 @@ public class UserEntity {
             targetEntity = ReceiptEntity.class,
             mappedBy = "user",
             cascade=CascadeType.ALL,
-            fetch = FetchType.LAZY)
+            fetch = FetchType.LAZY,
+            orphanRemoval = true)
     @ToString.Exclude
     private List<ReceiptEntity> receipts;
 

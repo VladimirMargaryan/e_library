@@ -19,17 +19,20 @@ public class PickDetailEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(mappedBy = "pickDetail", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "pickDetail", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
     private BookEntity book;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "pivked_by_user", nullable = false)
     @NonNull
+    @ToString.Exclude
     private UserEntity usedByUser;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "reserved_by_user", nullable = false)
     @NonNull
+    @ToString.Exclude
     private UserEntity reservedByUser;
 
     @Column(name = "reserved_until", nullable = false)

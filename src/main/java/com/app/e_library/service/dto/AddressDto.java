@@ -21,11 +21,6 @@ public class AddressDto {
     private String street;
     private int streetNumber;
 
-    public AddressDto(CityDto city, String street, int streetNumber) {
-        this.city = city;
-        this.street = street;
-        this.streetNumber = streetNumber;
-    }
 
     public static AddressDto mapToDto(AddressEntity addressEntity){
         AddressDto addressDto = new AddressDto();

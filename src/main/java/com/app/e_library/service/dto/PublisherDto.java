@@ -20,10 +20,6 @@ public class PublisherDto {
     private Long id;
     private String publisherName;
 
-    public PublisherDto(String publisherName) {
-        this.publisherName = publisherName;
-    }
-
     public static PublisherDto mapToDto(PublisherEntity publisherEntity) {
         PublisherDto publisherDto = new PublisherDto();
         publisherDto.setId(publisherEntity.getId());

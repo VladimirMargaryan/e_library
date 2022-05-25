@@ -20,7 +20,6 @@ import java.util.Objects;
                 @UniqueConstraint(name = "city_name_unique", columnNames = "city_name")
         }
 )
-
 public class CityEntity {
 
     @Id

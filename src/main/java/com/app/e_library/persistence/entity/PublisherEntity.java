@@ -33,14 +33,10 @@ public class PublisherEntity {
             targetEntity = BookEntity.class,
             mappedBy = "publisher",
             cascade=CascadeType.ALL,
-            fetch = FetchType.LAZY)
+            fetch = FetchType.LAZY,
+            orphanRemoval = true)
     @ToString.Exclude
     private List<BookEntity> books;
-
-    public PublisherEntity(String publisherName, List<BookEntity> books) {
-        this.publisherName = publisherName;
-        this.books = books;
-    }
 
     public PublisherEntity(String publisherName) {
         this.publisherName = publisherName;

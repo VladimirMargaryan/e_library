@@ -28,20 +28,6 @@ public class BookDto {
     private PickDetailDto pickDetail;
     private AuthorDto author;
 
-    public BookDto(Long id, String isbn, String title, short publicationYear,
-                   int pageCount, String bookGenre,
-                   BookStatusType bookStatus, String publisher, String author) {
-        this.id = id;
-        this.isbn = isbn;
-        this.title = title;
-        this.publicationYear = publicationYear;
-        this.pageCount = pageCount;
-        this.bookGenre = new BookGenreDto(bookGenre);
-        this.bookStatus = bookStatus;
-        this.publisher = new PublisherDto(publisher);
-        this.author = new AuthorDto(author);
-    }
-
 
     public static BookDto mapToDto(BookEntity bookEntity){
         BookDto bookDto = new BookDto();

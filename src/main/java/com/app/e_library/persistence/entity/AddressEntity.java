@@ -28,7 +28,7 @@ public class AddressEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "city_id", nullable = false)
     @ToString.Exclude
     @NonNull
@@ -41,7 +41,7 @@ public class AddressEntity {
     @Valid
     private int streetNumber;
 
-    @OneToOne(mappedBy = "address", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "address")
     @NonNull
     @ToString.Exclude
     private UserEntity user;

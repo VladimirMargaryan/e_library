@@ -15,16 +15,23 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>, JpaSpec
     UserEntity getUserEntityByEmail(String email);
 
     @Query("select distinct user from UserEntity user " +
-            "inner join AddressEntity address on user.address.id = address.id " +
-            "inner join CityEntity city on address.city.id = city.id " +
             "where lower(user.firstname) like concat(:key, '%') or " +
             "lower(user.lastname) like concat(:key, '%') or " +
             "lower(user.ssn) = :key or " +
             "lower(user.email) = :key or " +
-            "lower(user.phone) = :key or " +
-            "lower(concat(address.street, ' ', address.streetNumber)) = :key or " +
-            "lower(address.street) like concat(:key, '%') or " +
-            "lower(city.name) like concat(:key, '%')")
+            "lower(user.phone) = :key ")
     Page<UserEntity> searchByKeyword(Pageable pageable, @Param("key") String keyword);
+
+    @Query("select distinct user from UserEntity user " +
+            "inner join AddressEntity address on user.address.id = address.id " +
+            "where lower(address.street) like concat(:address, '%') or " +
+            "lower(concat(address.street, ' ', address.streetNumber)) = :address")
+    Page<UserEntity> searchByAddress(Pageable pageable, @Param("address") String address);
+
+
+    @Query("select distinct user from UserEntity user " +
+            "inner join CityEntity city on user.address.city.id = city.id " +
+            "where lower(city.name) like concat(:city, '%')")
+    Page<UserEntity> searchByCity(Pageable pageable, @Param("city") String city);
 
 }

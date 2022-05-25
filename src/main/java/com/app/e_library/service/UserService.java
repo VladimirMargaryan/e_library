@@ -11,6 +11,7 @@ import com.app.e_library.persistence.entity.RoleEntity;
 import com.app.e_library.persistence.entity.UserEntity;
 import com.app.e_library.persistence.pagination.PageRequest;
 import com.app.e_library.persistence.pagination.PageResponse;
+import com.app.e_library.persistence.specification.UserSearchSpecification;
 import com.app.e_library.service.dto.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -58,6 +59,7 @@ public class UserService {
                                                  int size,
                                                  String sortDirection,
                                                  String sortBy,
+                                                 String filterBy,
                                                  String keyword) {
 
         Pageable pageRequest = PageRequest.buildPage(page, size, sortBy, sortDirection);
@@ -65,8 +67,10 @@ public class UserService {
 
         if (keyword == null)
             userPage = UserDto.mapToDtoPage(userRepository.findAll(pageRequest));
-        else
-            userPage = UserDto.mapToDtoPage(userRepository.searchByKeyword(pageRequest, keyword.toLowerCase().trim()));
+        else {
+            UserSearchSpecification searchSpecification = new UserSearchSpecification(keyword, filterBy);
+            userPage = UserDto.mapToDtoPage(userRepository.findAll(searchSpecification, pageRequest));
+        }
 
         return new PageResponse<>(userPage);
     }

@@ -19,10 +19,6 @@ public class CityDto {
     private Long id;
     private String cityName;
 
-    public CityDto(String cityName) {
-        this.cityName = cityName;
-    }
-
     public static CityDto mapToDto(CityEntity cityEntity){
         return new CityDto(
                 cityEntity.getId(),

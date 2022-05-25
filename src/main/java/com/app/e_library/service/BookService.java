@@ -5,6 +5,7 @@ import com.app.e_library.persistence.*;
 import com.app.e_library.persistence.entity.*;
 import com.app.e_library.persistence.pagination.PageRequest;
 import com.app.e_library.persistence.pagination.PageResponse;
+import com.app.e_library.persistence.specification.BookSearchSpecification;
 import com.app.e_library.service.dto.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -14,6 +15,7 @@ import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.web.multipart.MultipartFile;
@@ -67,25 +69,13 @@ public class BookService {
                                           String keyword) {
 
         Pageable pageRequest = PageRequest.buildPage(page, size, sortBy, sortDirection);
-        Page<BookDto> bookPage = null;
+        Page<BookDto> bookPage;
 
         if (keyword == null)
             bookPage = BookDto.mapToDtoPage(bookRepository.findAll(pageRequest));
-        else {
-            if (filterBy != null) {
-                switch (filterBy) {
-                    case "genre":
-                        bookPage = BookDto.mapToDtoPage(bookRepository.searchByGenre(pageRequest, keyword.toLowerCase().trim()));
-                        break;
-                    case "publisher":
-                        bookPage = BookDto.mapToDtoPage(bookRepository.searchByPublisher(pageRequest, keyword.toLowerCase().trim()));
-                        break;
-                    case "author":
-                        bookPage = BookDto.mapToDtoPage(bookRepository.searchByAuthor(pageRequest, keyword.toLowerCase().trim()));
-                        break;
-                }
-            } else
-                bookPage = BookDto.mapToDtoPage(bookRepository.searchByKeyword(pageRequest, keyword.toLowerCase().trim()));
+        else{
+            BookSearchSpecification searchSpecification = new BookSearchSpecification(keyword, filterBy);
+            bookPage = BookDto.mapToDtoPage(bookRepository.findAll(searchSpecification, pageRequest));
         }
 
         return new PageResponse<>(bookPage);

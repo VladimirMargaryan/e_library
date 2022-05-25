@@ -42,15 +42,16 @@ public class UserController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'USER')")
     public ResponseEntity<Page<UserDto>> getUsersPage(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(required = false) String filterBy,
             @RequestParam(name = "sortDir", defaultValue = "asc") String sortDirection,
             @RequestParam(required = false) String keyword) {
 
-        PageResponse<UserDto> userPageResponse = userService.getAllPaginated(page, size, sortDirection, sortBy, keyword);
+        PageResponse<UserDto> userPageResponse = userService.getAllPaginated(page, size, sortDirection, sortBy, filterBy, keyword);
         HttpHeaders responseHeaders = new HttpHeaders(userPageResponse.buildHttpHeadersForPages());
 
         return ResponseEntity.ok().headers(responseHeaders).body(userPageResponse.getPage());

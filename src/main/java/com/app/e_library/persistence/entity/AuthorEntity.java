@@ -34,7 +34,8 @@ public class AuthorEntity {
             targetEntity = BookEntity.class,
             mappedBy = "author",
             cascade=CascadeType.ALL,
-            fetch = FetchType.LAZY)
+            fetch = FetchType.LAZY,
+            orphanRemoval = true)
     @ToString.Exclude
     private List<BookEntity> books;
 

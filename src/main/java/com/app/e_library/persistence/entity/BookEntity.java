@@ -65,7 +65,7 @@ public class BookEntity {
     @ToString.Exclude
     private PublisherEntity publisher;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "pick_detail_id")
     @ToString.Exclude
     private PickDetailEntity pickDetail;
@@ -76,7 +76,7 @@ public class BookEntity {
     @ToString.Exclude
     private AuthorEntity author;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "book_image_id")
     @ToString.Exclude
     private BookImageEntity bookImage;
@@ -85,7 +85,8 @@ public class BookEntity {
             targetEntity = ReceiptEntity.class,
             mappedBy = "book",
             cascade=CascadeType.ALL,
-            fetch = FetchType.LAZY)
+            fetch = FetchType.LAZY,
+            orphanRemoval = true)
     @ToString.Exclude
     private List<ReceiptEntity> receipts;
 
