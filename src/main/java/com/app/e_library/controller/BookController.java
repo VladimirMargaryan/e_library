@@ -1,5 +1,7 @@
 package com.app.e_library.controller;
 
+import com.app.e_library.persistence.pagination.BookSearchCriteria;
+import com.app.e_library.persistence.pagination.PageRequest;
 import com.app.e_library.persistence.pagination.PageResponse;
 import com.app.e_library.service.BookService;
 import com.app.e_library.service.dto.BookDto;
@@ -41,15 +43,17 @@ public class BookController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('EMPLOYEE', 'USER')")
-    public ResponseEntity<Page<BookDto>> getBooksPage(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(required = false) String filterBy,
-            @RequestParam(name = "sortDir", defaultValue = "asc") String sortDirection,
-            @RequestParam(required = false) String keyword) {
+    public ResponseEntity<Page<BookDto>> getAllBooks(PageRequest pageRequest) {
+        PageResponse<BookDto> bookPageResponse = bookService.getAllBooks(pageRequest);
+        HttpHeaders responseHeaders = new HttpHeaders(bookPageResponse.buildHttpHeadersForPages());
 
-        PageResponse<BookDto> bookPageResponse = bookService.getBooks(page, size, sortDirection, sortBy, filterBy, keyword);
+        return ResponseEntity.ok().headers(responseHeaders).body(bookPageResponse.getPage());
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('EMPLOYEE', 'USER')")
+    public ResponseEntity<Page<BookDto>> searchBooks(BookSearchCriteria bookSearchCriteria) {
+        PageResponse<BookDto> bookPageResponse = bookService.searchBooks(bookSearchCriteria);
         HttpHeaders responseHeaders = new HttpHeaders(bookPageResponse.buildHttpHeadersForPages());
 
         return ResponseEntity.ok().headers(responseHeaders).body(bookPageResponse.getPage());

@@ -11,13 +11,12 @@ import com.app.e_library.persistence.entity.RoleEntity;
 import com.app.e_library.persistence.entity.UserEntity;
 import com.app.e_library.persistence.pagination.PageRequest;
 import com.app.e_library.persistence.pagination.PageResponse;
-import com.app.e_library.persistence.specification.UserSearchSpecification;
+import com.app.e_library.persistence.pagination.UserSearchCriteria;
 import com.app.e_library.service.dto.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,23 +53,23 @@ public class UserService {
         this.addressRepository = addressRepository;
     }
 
+    public PageResponse<UserDto> getAllUsers(PageRequest pageRequest) {
+        return new PageResponse<>(UserDto.mapToDtoPage(userRepository.findAll(pageRequest.getPageable())));
+    }
 
-    public PageResponse<UserDto> getAllPaginated(int page,
-                                                 int size,
-                                                 String sortDirection,
-                                                 String sortBy,
-                                                 String filterBy,
-                                                 String keyword) {
+    public PageResponse<UserDto> searchUsers(UserSearchCriteria userSearchCriteria) {
 
-        Pageable pageRequest = PageRequest.buildPage(page, size, sortBy, sortDirection);
-        Page<UserDto> userPage;
-
-        if (keyword == null)
-            userPage = UserDto.mapToDtoPage(userRepository.findAll(pageRequest));
-        else {
-            UserSearchSpecification searchSpecification = new UserSearchSpecification(keyword, filterBy);
-            userPage = UserDto.mapToDtoPage(userRepository.findAll(searchSpecification, pageRequest));
-        }
+        Page<UserDto> userPage = userRepository.searchUser(
+                userSearchCriteria.getFirstname(),
+                userSearchCriteria.getLastname(),
+                userSearchCriteria.getSsn(),
+                userSearchCriteria.getEmail(),
+                userSearchCriteria.getPhone(),
+                userSearchCriteria.getStreet(),
+                userSearchCriteria.getStreetNumber(),
+                userSearchCriteria.getCity(),
+                userSearchCriteria.getPageable()
+        );
 
         return new PageResponse<>(userPage);
     }

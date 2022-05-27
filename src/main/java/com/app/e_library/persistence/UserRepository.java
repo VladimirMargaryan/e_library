@@ -1,6 +1,7 @@
 package com.app.e_library.persistence;
 
 import com.app.e_library.persistence.entity.UserEntity;
+import com.app.e_library.service.dto.UserDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,24 +15,28 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>, JpaSpec
 
     UserEntity getUserEntityByEmail(String email);
 
-    @Query("select distinct user from UserEntity user " +
-            "where lower(user.firstname) like concat(:key, '%') or " +
-            "lower(user.lastname) like concat(:key, '%') or " +
-            "lower(user.ssn) = :key or " +
-            "lower(user.email) = :key or " +
-            "lower(user.phone) = :key ")
-    Page<UserEntity> searchByKeyword(Pageable pageable, @Param("key") String keyword);
-
-    @Query("select distinct user from UserEntity user " +
-            "inner join AddressEntity address on user.address.id = address.id " +
-            "where lower(address.street) like concat(:address, '%') or " +
-            "lower(concat(address.street, ' ', address.streetNumber)) = :address")
-    Page<UserEntity> searchByAddress(Pageable pageable, @Param("address") String address);
-
-
-    @Query("select distinct user from UserEntity user " +
-            "inner join CityEntity city on user.address.city.id = city.id " +
-            "where lower(city.name) like concat(:city, '%')")
-    Page<UserEntity> searchByCity(Pageable pageable, @Param("city") String city);
+    @Query("select new com.app.e_library.service.dto.UserDto(user.id, user.firstname," +
+            " user.lastname, user.ssn, user.email, user.phone, user.registration_date," +
+            " address.street, address.streetNumber, city.name, user.userStatus) from UserEntity user " +
+            "inner join user.address address " +
+            "inner join user.address.city city " +
+            "where (:firstname = '' or (lower(function('replace', user.firstname, ' ', '')) like concat(:firstname, '%'))) and " +
+            "(:lastname = '' or (lower(function('replace', user.lastname, ' ', '')) like concat(:lastname, '%'))) and " +
+            "(:ssn = '' or (lower(function('replace', user.ssn, '-', '')) = :ssn)) and " +
+            "(:email = '' or (lower(function('replace', user.email, ' ', '')) = :email)) and " +
+            "(:phone = '' or (lower(function('replace', user.phone, '-', '')) = :phone)) and " +
+            "(:street = '' or (lower(function('replace', address.street, ' ', '')) like concat(:street, '%'))) and " +
+            "(:streetNumber = 0 or address.streetNumber = :streetNumber) and " +
+            "(:city = '' or (lower(function('replace', city.name, ' ', '')) like concat(:city, '%')))")
+    Page<UserDto> searchUser(@Param("firstname") String firstname,
+                             @Param("lastname") String lastname,
+                             @Param("ssn") String ssn,
+                             @Param("email") String email,
+                             @Param("phone") String phone,
+                             @Param("street") String street,
+                             @Param("streetNumber") Integer streetNumber,
+                             @Param("city") String city,
+                             Pageable pageable
+    );
 
 }

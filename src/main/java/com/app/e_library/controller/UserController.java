@@ -1,6 +1,8 @@
 package com.app.e_library.controller;
 
+import com.app.e_library.persistence.pagination.PageRequest;
 import com.app.e_library.persistence.pagination.PageResponse;
+import com.app.e_library.persistence.pagination.UserSearchCriteria;
 import com.app.e_library.service.UserService;
 import com.app.e_library.service.dto.UserDto;
 import com.app.e_library.validation.UserValidator;
@@ -42,16 +44,23 @@ public class UserController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'USER')")
-    public ResponseEntity<Page<UserDto>> getUsersPage(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(required = false) String filterBy,
-            @RequestParam(name = "sortDir", defaultValue = "asc") String sortDirection,
-            @RequestParam(required = false) String keyword) {
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
+    public ResponseEntity<Page<UserDto>> getSllUsers(PageRequest pageRequest) {
 
-        PageResponse<UserDto> userPageResponse = userService.getAllPaginated(page, size, sortDirection, sortBy, filterBy, keyword);
+        PageResponse<UserDto> userPageResponse = userService.getAllUsers(pageRequest);
+        HttpHeaders responseHeaders = new HttpHeaders(userPageResponse.buildHttpHeadersForPages());
+
+        return ResponseEntity.ok().headers(responseHeaders).body(userPageResponse.getPage());
+    }
+
+
+
+
+    @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'USER')")
+    public ResponseEntity<Page<UserDto>> getUsersPage(UserSearchCriteria userSearchCriteria) {
+
+        PageResponse<UserDto> userPageResponse = userService.searchUsers(userSearchCriteria);
         HttpHeaders responseHeaders = new HttpHeaders(userPageResponse.buildHttpHeadersForPages());
 
         return ResponseEntity.ok().headers(responseHeaders).body(userPageResponse.getPage());

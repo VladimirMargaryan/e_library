@@ -19,6 +19,10 @@ public class BookGenreDto {
     private Long id;
     private String name;
 
+    public BookGenreDto(String name) {
+        this.name = name;
+    }
+
     public static BookGenreDto mapToDto(BookGenreEntity bookGenreEntity){
         BookGenreDto bookGenreDto = new BookGenreDto();
         bookGenreDto.setId(bookGenreEntity.getId());

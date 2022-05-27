@@ -1,6 +1,7 @@
 package com.app.e_library.persistence;
 
 import com.app.e_library.persistence.entity.BookEntity;
+import com.app.e_library.service.dto.BookDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,7 +19,7 @@ public interface BookRepository extends JpaRepository<BookEntity, Long>, JpaSpec
     Optional<BookEntity> findBookEntityByIsbn(String isbn);
 
     @Query("from BookEntity book " +
-            "inner join BookImageEntity image on image.id = book.bookImage.id " +
+            "inner join book.bookImage image " +
             "where image.imageDownloadStatus='TODO'")
     List<BookEntity> getFirstNBooksByImageDownloadStatus(Pageable pageable);
 
@@ -29,33 +30,25 @@ public interface BookRepository extends JpaRepository<BookEntity, Long>, JpaSpec
     List<BookEntity> getImageDownloadFailedBooks(@Param("currentTime") Long currentTImeInMillis, Pageable pageable);
 
 
-    @Query("select distinct book from BookEntity book " +
-            "inner join BookGenreEntity genre on book.bookGenre.id = genre.id " +
-            "inner join PublisherEntity publisher on book.publisher.id = publisher.id " +
-            "inner join AuthorEntity author on book.author.id = author.id " +
-            "where lower(genre.name) like concat(:key, '%') or " +
-            "lower(publisher.publisherName) like concat(:key, '%') or " +
-            "lower(author.name) like concat(:key, '%') or " +
-            "lower(book.title) like concat(:key, '%') or " +
-            "lower(book.isbn) = :key or " +
-            "book.publicationYear = :key")
-    Page<BookEntity> searchByKeyword(Pageable pageable, @Param("key") String keyword);
-
-
-    @Query("select distinct book from BookEntity book " +
-            "inner join BookGenreEntity genre on book.bookGenre.id = genre.id " +
-            "where lower(genre.name) like concat(:genre, '%') ")
-    Page<BookEntity> searchByGenre(Pageable pageable, @Param("genre") String genre);
-
-
-    @Query("select distinct book from BookEntity book " +
-            "inner join AuthorEntity author on book.author.id = author.id " +
-            "where lower(author.name) like concat(:author, '%')")
-    Page<BookEntity> searchByAuthor(Pageable pageable, @Param("author") String author);
-
-    @Query("select distinct book from BookEntity book " +
-            "inner join PublisherEntity publisher on book.publisher.id = publisher.id " +
-            "where lower(publisher.publisherName) like concat(:publisher, '%')")
-    Page<BookEntity> searchByPublisher(Pageable pageable, @Param("publisher") String publisher);
+    @Query("select new com.app.e_library.service.dto.BookDto(b.id, b.isbn, b.title, " +
+            "b.publicationYear, b.pageCount, b.bookStatus, i.imageURLLarge, i.imageURLSmall, g.name, " +
+            "a.name, p.publisherName) from BookEntity b " +
+            "inner join b.bookGenre g " +
+            "inner join b.publisher p " +
+            "inner join b.author a " +
+            "inner join b.bookImage i where " +
+            "(:isbn = '' or (lower(function('replace', b.isbn, ' ', '')) like concat(:isbn, '%'))) and " +
+            "(:title = '' or (lower(function('replace', b.title, ' ', '')) like concat(:title, '%'))) and " +
+            "(:publicationYear = 0 or b.publicationYear = :publicationYear) and " +
+            "(:genre = '' or (lower(function('replace', g.name, ' ', '')) like concat(:genre, '%'))) and " +
+            "(:author = '' or (lower(function('replace', a.name, ' ', '')) like concat(:author, '%'))) and " +
+            "(:publisher = '' or (lower(function('replace', p.publisherName, ' ', '')) like concat(:publisher, '%')))")
+    Page<BookDto> searchBook(@Param("isbn") String isbn,
+                             @Param("title") String title,
+                             @Param("publicationYear") int publicationYear,
+                             @Param("genre") String genre,
+                             @Param("author") String author,
+                             @Param("publisher") String publisher,
+                             Pageable pageable);
 
 }

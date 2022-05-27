@@ -37,6 +37,19 @@ public class UserDto {
     private UserStatusType status;
     private RoleDto role;
 
+    public UserDto(Long id, String firstname, String lastname, String ssn,
+                   String email, String phone, long registerDate,
+                   String street, int streetNumber, String city, UserStatusType status) {
+        this.id = id;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.ssn = ssn;
+        this.email = email;
+        this.phone = phone;
+        this.registration_date = registerDate;
+        this.address = new AddressDto(new CityDto(city), street, streetNumber);
+        this.status = status;
+    }
 
     public static UserDto mapToDto(UserEntity userEntity) {
 

@@ -36,6 +36,11 @@ public class BookImageDto {
     private Long thumbnailSizeBytes;
 
 
+    public BookImageDto(String imageURLSmall, String imageURLLarge) {
+        this.imageURLSmall = imageURLSmall;
+        this.imageURLLarge = imageURLLarge;
+    }
+
     public static BookImageDto mapToDto(BookImageEntity bookImageEntity){
         BookImageDto bookImageDto = new BookImageDto();
         bookImageDto.setId(bookImageEntity.getId());
