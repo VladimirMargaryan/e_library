@@ -3,6 +3,7 @@ package com.app.e_library.persistence.entity;
 import com.app.e_library.service.dto.BookImageDownloadStatus;
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.hibernate.validator.constraints.URL;
 
 import javax.persistence.*;
 import javax.validation.Valid;
@@ -30,12 +31,15 @@ public class BookImageEntity {
     @Column(name = "image_download_start_time")
     private Long imageDownloadStartTime;
 
+    @URL(message = "URL is not valid")
     @Column(name = "image_url_S")
     private String imageURLSmall;
 
+    @URL(message = "URL is not valid")
     @Column(name = "image_url_m")
     private String imageURLMedium;
 
+    @URL(message = "URL is not valid")
     @Column(name = "image_url_l")
     private String imageURLLarge;
 
