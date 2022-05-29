@@ -15,6 +15,10 @@ public class PasswordValidator implements ConstraintValidator<ValidPassword, Str
 
     @Override
     public boolean isValid(String password, ConstraintValidatorContext context) {
+
+        if (password == null || password.isEmpty())
+            return false;
+
         org.passay.PasswordValidator validator = new org.passay.PasswordValidator(Arrays.asList(
                 new LengthRule(8, 30),
                 new UppercaseCharacterRule(1),
@@ -26,13 +30,16 @@ public class PasswordValidator implements ConstraintValidator<ValidPassword, Str
                 new WhitespaceRule()));
 
         RuleResult result = validator.validate(new PasswordData(password));
+
         if (result.isValid()) {
             return true;
         }
+
         context.disableDefaultConstraintViolation();
         context.buildConstraintViolationWithTemplate(
                 new StringJoiner(",").add(validator.getMessages(result).toString()).toString())
                 .addConstraintViolation();
+
         return false;
     }
 }

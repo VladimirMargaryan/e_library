@@ -4,12 +4,14 @@ import com.app.e_library.service.dto.UserStatusType;
 import com.app.e_library.validation.ValidEmail;
 import com.app.e_library.validation.ValidPassword;
 import com.app.e_library.validation.ValidPhone;
+import com.app.e_library.validation.ValidSsn;
 import lombok.*;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Objects;
@@ -37,23 +39,23 @@ public class UserEntity {
 
     @Column(name = "first_name", nullable = false)
     @NotBlank
+    @NotNull
     private String firstname;
 
     @Column(name = "last_name", nullable = false)
     @NotBlank
+    @NotNull
     private String lastname;
 
     @Column(name = "ssn", nullable = false)
-    @NotBlank
+    @ValidSsn
     private String ssn;
 
     @Column(name = "email", nullable = false)
-    @NotBlank
     @ValidEmail
     private String email;
 
     @Column(name = "password", nullable = false)
-    @NotBlank
     @ValidPassword
     private String password;
 
@@ -62,7 +64,6 @@ public class UserEntity {
     private Long registrationDate;
 
     @Column(name = "phone", nullable = false)
-    @NotBlank
     @ValidPhone
     private String phone;
 
