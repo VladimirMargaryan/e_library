@@ -1,7 +1,6 @@
 package com.app.e_library.persistence.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -12,6 +11,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(
@@ -45,12 +45,6 @@ public class AddressEntity {
     @NonNull
     @ToString.Exclude
     private UserEntity user;
-
-    public AddressEntity(@NonNull CityEntity city, String street, int streetNumber) {
-        this.city = city;
-        this.street = street;
-        this.streetNumber = streetNumber;
-    }
 
     @Override
     public boolean equals(Object o) {

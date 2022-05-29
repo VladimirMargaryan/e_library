@@ -7,36 +7,30 @@ import lombok.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode
+@Data
+@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AuthorDto {
 
     private Long id;
     private String name;
 
-    public AuthorDto(String name) {
-        this.name = name;
-    }
-
     public static AuthorDto mapToDto(AuthorEntity authorEntity){
-        AuthorDto authorDto = new AuthorDto();
-        authorDto.setId(authorEntity.getId());
-        authorDto.setName(authorEntity.getName());
 
-        return authorDto;
+        return AuthorDto
+                .builder()
+                .id(authorEntity.getId())
+                .name(authorEntity.getName())
+                .build();
     }
 
     public static AuthorEntity mapToEntity(AuthorDto authorDto){
-        AuthorEntity authorEntity = new AuthorEntity();
-        authorEntity.setId(authorDto.getId());
-        authorEntity.setName(authorDto.getName());
 
-        return authorEntity;
+        return AuthorEntity
+                .builder()
+                .id(authorDto.getId())
+                .name(authorDto.getName())
+                .build();
     }
 
     public static List<AuthorDto> mapToDtoList(List<AuthorEntity> authorEntities){

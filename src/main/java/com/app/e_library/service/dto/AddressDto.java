@@ -7,12 +7,8 @@ import lombok.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode
+@Data
+@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AddressDto {
 
@@ -21,29 +17,26 @@ public class AddressDto {
     private String street;
     private int streetNumber;
 
-    public AddressDto(CityDto city, String street, int streetNumber) {
-        this.city = city;
-        this.street = street;
-        this.streetNumber = streetNumber;
-    }
 
     public static AddressDto mapToDto(AddressEntity addressEntity){
-        AddressDto addressDto = new AddressDto();
-        addressDto.setId(addressEntity.getId());
-        addressDto.setCity(CityDto.mapToDto(addressEntity.getCity()));
-        addressDto.setStreet(addressEntity.getStreet());
-        addressDto.setStreetNumber(addressEntity.getStreetNumber());
 
-        return addressDto;
+        return AddressDto.builder()
+                .id(addressEntity.getId())
+                .city(CityDto.mapToDto(addressEntity.getCity()))
+                .street(addressEntity.getStreet())
+                .streetNumber(addressEntity.getStreetNumber())
+                .build();
     }
 
     public static AddressEntity mapToEntity(AddressDto addressDto){
-        AddressEntity address = new AddressEntity();
-        address.setId(addressDto.getId());
-        address.setCity(CityDto.mapToEntityList(addressDto.getCity()));
-        address.setStreet(addressDto.getStreet());
-        address.setStreetNumber(addressDto.getStreetNumber());
-        return address;
+
+        return AddressEntity
+                .builder()
+                .id(addressDto.getId())
+                .city(CityDto.mapToEntityList(addressDto.getCity()))
+                .street(addressDto.getStreet())
+                .streetNumber(addressDto.getStreetNumber())
+                .build();
 
     }
 

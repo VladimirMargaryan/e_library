@@ -4,19 +4,18 @@ import com.app.e_library.exception.NotFoundException;
 import com.app.e_library.persistence.PublisherRepository;
 import com.app.e_library.persistence.entity.PublisherEntity;
 import com.app.e_library.service.dto.PublisherDto;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class PublisherService {
 
     private final PublisherRepository publisherRepository;
 
-    public PublisherService(PublisherRepository publisherRepository) {
-        this.publisherRepository = publisherRepository;
-    }
 
     public List<PublisherDto> getAll() {
         return PublisherDto.mapToDtoList(publisherRepository.findAll());

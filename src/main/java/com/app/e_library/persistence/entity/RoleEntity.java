@@ -10,6 +10,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -40,11 +41,6 @@ public class RoleEntity {
             orphanRemoval = true)
     @ToString.Exclude
     private List<UserEntity> users;
-
-    public RoleEntity(Long id, String rollName) {
-        this.id = id;
-        this.rollName = rollName;
-    }
 
     @Override
     public boolean equals(Object o) {

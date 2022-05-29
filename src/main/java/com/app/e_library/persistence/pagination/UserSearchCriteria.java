@@ -1,10 +1,12 @@
 package com.app.e_library.persistence.pagination;
 
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@EqualsAndHashCode(callSuper = false)
 @ToString
+@Builder
+@EqualsAndHashCode(callSuper = false)
 public class UserSearchCriteria extends PageRequest {
     private String firstname;
     private String lastname;

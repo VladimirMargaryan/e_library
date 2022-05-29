@@ -9,12 +9,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode
+@Data
+@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ReceiptDto {
 
@@ -26,23 +22,28 @@ public class ReceiptDto {
 
 
     public static ReceiptDto mapToDto(ReceiptEntity receiptEntity) {
-        return new ReceiptDto(
-                receiptEntity.getId(),
-                receiptEntity.getOrderDate(),
-                receiptEntity.getExpirationDate(),
-                UserDto.mapToDto(receiptEntity.getUser()),
-                BookDto.mapToDto(receiptEntity.getBook())
-        );
+
+        return ReceiptDto
+                .builder()
+                .id(receiptEntity.getId())
+                .orderDate(receiptEntity.getOrderDate())
+                .expirationDate(receiptEntity.getExpirationDate())
+                .user(UserDto.mapToDto(receiptEntity.getUser()))
+                .book(BookDto.mapToDto(receiptEntity.getBook()))
+                .build();
     }
 
     public static ReceiptEntity mapToEntity(ReceiptDto receiptDto) {
-        return new ReceiptEntity(
-                receiptDto.getId(),
-                receiptDto.getOrderDate(),
-                receiptDto.getExpirationDate(),
-                UserDto.mapToEntity(receiptDto.getUser()),
-                BookDto.mapToEntity(receiptDto.getBook())
-        );
+
+        return ReceiptEntity
+                .builder()
+                .id(receiptDto.getId())
+                .orderDate(receiptDto.getOrderDate())
+                .expirationDate(receiptDto.getExpirationDate())
+                .user(UserDto.mapToEntity(receiptDto.getUser()))
+                .book(BookDto.mapToEntity(receiptDto.getBook()))
+                .build();
+
     }
 
     public static List<ReceiptDto> mapToDtoList(List<ReceiptEntity> receiptEntities){

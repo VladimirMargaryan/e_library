@@ -4,19 +4,17 @@ import com.app.e_library.exception.NotFoundException;
 import com.app.e_library.persistence.BookGenreRepository;
 import com.app.e_library.persistence.entity.BookGenreEntity;
 import com.app.e_library.service.dto.BookGenreDto;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class BookGenreService {
 
     private final BookGenreRepository bookGenreRepository;
-
-    public BookGenreService(BookGenreRepository bookGenreRepository) {
-        this.bookGenreRepository = bookGenreRepository;
-    }
 
     public List<BookGenreDto> getAll() {
         return BookGenreDto.mapToDtoList(bookGenreRepository.findAll());

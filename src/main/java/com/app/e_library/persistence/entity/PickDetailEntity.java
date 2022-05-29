@@ -10,6 +10,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "pick_detail")
@@ -43,11 +44,6 @@ public class PickDetailEntity {
     @Valid
     private Long returnDate;
 
-    public PickDetailEntity(Long id, Long reservedUntil, Long returnDate) {
-        this.id = id;
-        this.reservedUntil = reservedUntil;
-        this.returnDate = returnDate;
-    }
 
     @Override
     public boolean equals(Object o) {

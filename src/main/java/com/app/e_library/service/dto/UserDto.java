@@ -1,8 +1,6 @@
 package com.app.e_library.service.dto;
 
 import com.app.e_library.persistence.entity.*;
-import com.app.e_library.validation.ValidEmail;
-import com.app.e_library.validation.ValidPassword;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
@@ -12,12 +10,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
+@Builder
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode
+@AllArgsConstructor
+@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDto {
 
@@ -27,7 +26,7 @@ public class UserDto {
     private String ssn;
     private String email;
     private String password;
-    private Long registration_date;
+    private Long registrationDate;
     private String phone;
     @JsonIgnore
     private String resetPasswordToken;
@@ -46,47 +45,56 @@ public class UserDto {
         this.ssn = ssn;
         this.email = email;
         this.phone = phone;
-        this.registration_date = registerDate;
-        this.address = new AddressDto(new CityDto(city), street, streetNumber);
+        this.registrationDate = registerDate;
+
+        this.address = AddressDto
+                .builder()
+                .city(CityDto.builder().cityName(city).build())
+                .street(street)
+                .streetNumber(streetNumber)
+                .build();
+
         this.status = status;
     }
 
     public static UserDto mapToDto(UserEntity userEntity) {
 
-        return new UserDto(
-                userEntity.getId(),
-                userEntity.getFirstname(),
-                userEntity.getLastname(),
-                userEntity.getSsn(),
-                userEntity.getEmail(),
-                userEntity.getPassword(),
-                userEntity.getRegistration_date(),
-                userEntity.getPhone(),
-                userEntity.getResetPasswordToken(),
-                userEntity.getResetPasswordTokenCreationDate(),
-                AddressDto.mapToDto(userEntity.getAddress()),
-                userEntity.getUserStatus(),
-                RoleDto.mapToDto(userEntity.getRole())
-        );
+       return UserDto
+               .builder()
+               .id(userEntity.getId())
+               .firstname(userEntity.getFirstname())
+               .lastname(userEntity.getLastname())
+               .ssn(userEntity.getSsn())
+               .email(userEntity.getEmail())
+               .password(userEntity.getPassword())
+               .registrationDate(userEntity.getRegistrationDate())
+               .phone(userEntity.getPhone())
+               .resetPasswordToken(userEntity.getResetPasswordToken())
+               .resetPasswordTokenCreationDate(userEntity.getResetPasswordTokenCreationDate())
+               .address(AddressDto.mapToDto(userEntity.getAddress()))
+               .status(userEntity.getUserStatus())
+               .role(RoleDto.mapToDto(userEntity.getRole()))
+               .build();
     }
 
     public static UserEntity mapToEntity(UserDto userDto) {
 
-        return new UserEntity(
-                userDto.getId(),
-                userDto.getFirstname(),
-                userDto.getLastname(),
-                userDto.getSsn(),
-                userDto.getEmail(),
-                userDto.getPassword(),
-                userDto.getRegistration_date(),
-                userDto.getPhone(),
-                userDto.getResetPasswordToken(),
-                userDto.getResetPasswordTokenCreationDate(),
-                AddressDto.mapToEntity(userDto.getAddress()),
-                userDto.getStatus(),
-                RoleDto.mapToEntity(userDto.getRole())
-        );
+        return UserEntity
+                .builder()
+                .id(userDto.getId())
+                .firstname(userDto.getFirstname())
+                .lastname(userDto.getLastname())
+                .ssn(userDto.getSsn())
+                .email(userDto.getEmail())
+                .password(userDto.getPassword())
+                .registrationDate(userDto.getRegistrationDate())
+                .phone(userDto.getPhone())
+                .resetPasswordToken(userDto.getResetPasswordToken())
+                .resetPasswordTokenCreationDate(userDto.getResetPasswordTokenCreationDate())
+                .address(AddressDto.mapToEntity(userDto.getAddress()))
+                .userStatus(userDto.getStatus())
+                .role(RoleDto.mapToEntity(userDto.getRole()))
+                .build();
     }
 
     public static List<UserDto> mapToDtoList(List<UserEntity> userEntities){

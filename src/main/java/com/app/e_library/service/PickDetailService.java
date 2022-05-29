@@ -3,19 +3,18 @@ package com.app.e_library.service;
 import com.app.e_library.exception.NotFoundException;
 import com.app.e_library.persistence.PickDetailRepository;
 import com.app.e_library.service.dto.PickDetailDto;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class PickDetailService {
 
     private final PickDetailRepository pickDetailRepository;
 
-    public PickDetailService(PickDetailRepository pickDetailRepository) {
-        this.pickDetailRepository = pickDetailRepository;
-    }
 
     public List<PickDetailDto> getAll() {
         return PickDetailDto.mapToDtoList(pickDetailRepository.findAll());

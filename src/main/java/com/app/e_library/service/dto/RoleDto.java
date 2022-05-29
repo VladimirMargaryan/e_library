@@ -8,12 +8,8 @@ import lombok.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode
+@Data
+@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RoleDto {
 
@@ -22,18 +18,20 @@ public class RoleDto {
 
     public static RoleDto mapToDto(RoleEntity roleEntity){
 
-        return new RoleDto(
-                roleEntity.getId(),
-                roleEntity.getRollName()
-        );
+        return RoleDto
+                .builder()
+                .id(roleEntity.getId())
+                .rollName(roleEntity.getRollName())
+                .build();
     }
 
     public static RoleEntity mapToEntity(RoleDto roleDto){
 
-        return new RoleEntity(
-                roleDto.getId(),
-                roleDto.getRollName()
-        );
+        return RoleEntity
+                .builder()
+                .id(roleDto.getId())
+                .rollName(roleDto.getRollName())
+                .build();
     }
 
     public static List<RoleDto> mapToDtoList(List<RoleEntity> roleEntities) {

@@ -1,6 +1,8 @@
 package com.app.e_library.service.dto;
 
+import com.app.e_library.persistence.entity.BookEntity;
 import com.app.e_library.persistence.entity.PickDetailEntity;
+import com.app.e_library.persistence.entity.UserEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
@@ -8,12 +10,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode
+@Data
+@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PickDetailDto {
 
@@ -25,34 +23,34 @@ public class PickDetailDto {
     private Long returnDate;
 
     public static PickDetailDto mapToDto(PickDetailEntity pickDetailEntity){
-        return new PickDetailDto(
-                pickDetailEntity.getId(),
-                BookDto.mapToDto(pickDetailEntity.getBook()),
-                UserDto.mapToDto(pickDetailEntity.getUsedByUser()),
-                UserDto.mapToDto(pickDetailEntity.getReservedByUser()),
-                pickDetailEntity.getReservedUntil(),
-                pickDetailEntity.getReturnDate()
-        );
+        return PickDetailDto
+                .builder()
+                .id(pickDetailEntity.getId())
+                .book(BookDto.mapToDto(pickDetailEntity.getBook()))
+                .usedByUser(UserDto.mapToDto(pickDetailEntity.getUsedByUser()))
+                .reservedByUser(UserDto.mapToDto(pickDetailEntity.getReservedByUser()))
+                .reservedUntil(pickDetailEntity.getReservedUntil())
+                .returnDate(pickDetailEntity.getReturnDate())
+                .build();
     }
 
     public static PickDetailEntity mapToEntity(PickDetailDto pickDetailDto){
 
-        PickDetailEntity newPickDetailEntity =  new PickDetailEntity(
-                pickDetailDto.getId(),
-                pickDetailDto.getReservedUntil(),
-                pickDetailDto.getReturnDate()
-        );
-
-        if (pickDetailDto.getReservedByUser() != null)
-            newPickDetailEntity.setReservedByUser(UserDto.mapToEntity(pickDetailDto.getReservedByUser()));
-
-        if (pickDetailDto.getBook() != null)
-            newPickDetailEntity.setBook(BookDto.mapToEntity(pickDetailDto.getBook()));
-
-        if (pickDetailDto.getUsedByUser() != null)
-            newPickDetailEntity.setUsedByUser(UserDto.mapToEntity(pickDetailDto.getUsedByUser()));
-
-        return newPickDetailEntity;
+        return PickDetailEntity
+                .builder()
+                .id(pickDetailDto.getId())
+                .book(pickDetailDto.getBook() == null ? BookEntity
+                        .builder()
+                        .build() : BookDto.mapToEntity(pickDetailDto.getBook()))
+                .usedByUser(pickDetailDto.getUsedByUser() == null ? UserEntity
+                        .builder()
+                        .build() : UserDto.mapToEntity(pickDetailDto.getUsedByUser()))
+                .reservedByUser(pickDetailDto.getReservedByUser() == null ? UserEntity
+                        .builder()
+                        .build() : UserDto.mapToEntity(pickDetailDto.getReservedByUser()))
+                .reservedUntil(pickDetailDto.getReservedUntil())
+                .returnDate(pickDetailDto.getReturnDate())
+                .build();
     }
 
     public static List<PickDetailDto> mapToDtoList(List<PickDetailEntity> borrowDetailEntities){

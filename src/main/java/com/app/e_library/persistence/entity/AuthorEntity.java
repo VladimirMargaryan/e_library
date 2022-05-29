@@ -11,6 +11,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -38,10 +39,6 @@ public class AuthorEntity {
             orphanRemoval = true)
     @ToString.Exclude
     private List<BookEntity> books;
-
-    public AuthorEntity(String name) {
-        this.name = name;
-    }
 
     @Override
     public boolean equals(Object o) {

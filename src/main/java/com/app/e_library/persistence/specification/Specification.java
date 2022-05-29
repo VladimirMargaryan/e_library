@@ -1,14 +1,15 @@
 package com.app.e_library.persistence.specification;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+
 import javax.persistence.criteria.*;
 
+@Builder
+@AllArgsConstructor
 public class Specification<T> implements org.springframework.data.jpa.domain.Specification<T> {
 
     private final SearchCriteria criteria;
-
-    public Specification(SearchCriteria criteria) {
-        this.criteria = criteria;
-    }
 
     @Override
     public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder builder) {

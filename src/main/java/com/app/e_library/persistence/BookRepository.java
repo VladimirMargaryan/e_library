@@ -49,6 +49,7 @@ public interface BookRepository extends JpaRepository<BookEntity, Long>, JpaSpec
                              @Param("genre") String genre,
                              @Param("author") String author,
                              @Param("publisher") String publisher,
-                             Pageable pageable);
+                             Pageable pageable
+    );
 
 }

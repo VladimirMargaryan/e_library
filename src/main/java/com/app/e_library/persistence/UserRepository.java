@@ -16,7 +16,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long>, JpaSpec
     UserEntity getUserEntityByEmail(String email);
 
     @Query("select new com.app.e_library.service.dto.UserDto(user.id, user.firstname," +
-            " user.lastname, user.ssn, user.email, user.phone, user.registration_date," +
+            " user.lastname, user.ssn, user.email, user.phone, user.registrationDate," +
             " address.street, address.streetNumber, city.name, user.userStatus) from UserEntity user " +
             "inner join user.address address " +
             "inner join user.address.city city " +

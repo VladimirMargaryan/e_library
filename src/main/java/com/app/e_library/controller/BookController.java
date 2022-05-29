@@ -6,6 +6,7 @@ import com.app.e_library.persistence.pagination.PageResponse;
 import com.app.e_library.service.BookService;
 import com.app.e_library.service.dto.BookDto;
 import com.app.e_library.validation.BookValidator;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -21,13 +22,10 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/books")
+@AllArgsConstructor
 public class BookController {
 
     private final BookService bookService;
-
-    public BookController(BookService bookService) {
-        this.bookService = bookService;
-    }
 
     @PostMapping("/parse/csv")
     @PreAuthorize("hasAnyRole('ADMIN')")

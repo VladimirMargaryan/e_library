@@ -3,6 +3,7 @@ package com.app.e_library.service.dto;
 import com.app.e_library.persistence.entity.BookImageEntity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,8 +14,7 @@ import java.util.stream.Collectors;
 
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BookImageDto {
 
@@ -36,44 +36,42 @@ public class BookImageDto {
     private Long thumbnailSizeBytes;
 
 
-    public BookImageDto(String imageURLSmall, String imageURLLarge) {
-        this.imageURLSmall = imageURLSmall;
-        this.imageURLLarge = imageURLLarge;
-    }
-
     public static BookImageDto mapToDto(BookImageEntity bookImageEntity){
-        BookImageDto bookImageDto = new BookImageDto();
-        bookImageDto.setId(bookImageEntity.getId());
-        bookImageDto.setImageDownloadStatus(bookImageEntity.getImageDownloadStatus());
-        bookImageDto.setImageDownloadStartTime(bookImageEntity.getImageDownloadStartTime());
-        bookImageDto.setImageURLSmall(bookImageEntity.getImageURLSmall());
-        bookImageDto.setImageURLMedium(bookImageEntity.getImageURLMedium());
-        bookImageDto.setImageURLLarge(bookImageEntity.getImageURLLarge());
-        bookImageDto.setCoverImagePath(bookImageEntity.getCoverImagePath());
-        bookImageDto.setThumbnailPath(bookImageEntity.getThumbnailPath());
-        bookImageDto.setType(bookImageEntity.getType());
-        bookImageDto.setCoverImageSizeBytes(bookImageEntity.getCoverImageSizeBytes());
-        bookImageDto.setThumbnailSizeBytes(bookImageEntity.getThumbnailSizeBytes());
 
-        return bookImageDto;
+        return BookImageDto
+                .builder()
+                .id(bookImageEntity.getId())
+                .imageDownloadStatus(bookImageEntity.getImageDownloadStatus())
+                .imageDownloadStartTime(bookImageEntity.getImageDownloadStartTime())
+                .imageURLSmall(bookImageEntity.getImageURLSmall())
+                .imageURLMedium(bookImageEntity.getImageURLMedium())
+                .imageURLLarge(bookImageEntity.getImageURLLarge())
+                .coverImagePath(bookImageEntity.getCoverImagePath())
+                .thumbnailPath(bookImageEntity.getThumbnailPath())
+                .type(bookImageEntity.getType())
+                .coverImageSizeBytes(bookImageEntity.getCoverImageSizeBytes())
+                .thumbnailSizeBytes(bookImageEntity.getThumbnailSizeBytes())
+                .build();
     }
 
 
     public static BookImageEntity mapToEntity(BookImageDto bookImageDto){
-        BookImageEntity bookImageEntity = new BookImageEntity();
-        bookImageEntity.setId(bookImageDto.getId());
-        bookImageEntity.setImageDownloadStatus(bookImageDto.getImageDownloadStatus());
-        bookImageEntity.setImageDownloadStartTime(bookImageDto.getImageDownloadStartTime());
-        bookImageEntity.setImageURLSmall(bookImageDto.getImageURLSmall());
-        bookImageEntity.setImageURLMedium(bookImageDto.getImageURLMedium());
-        bookImageEntity.setImageURLLarge(bookImageDto.getImageURLLarge());
-        bookImageEntity.setCoverImagePath(bookImageDto.getCoverImagePath());
-        bookImageEntity.setThumbnailPath(bookImageDto.getThumbnailPath());
-        bookImageEntity.setType(bookImageDto.getType());
-        bookImageEntity.setCoverImageSizeBytes(bookImageDto.getCoverImageSizeBytes());
-        bookImageEntity.setThumbnailSizeBytes(bookImageDto.getThumbnailSizeBytes());
 
-        return bookImageEntity;
+        return BookImageEntity
+                .builder()
+                .id(bookImageDto.getId())
+                .imageDownloadStatus(bookImageDto.getImageDownloadStatus())
+                .imageDownloadStartTime(bookImageDto.getImageDownloadStartTime())
+                .imageURLSmall(bookImageDto.getImageURLSmall())
+                .imageURLMedium(bookImageDto.getImageURLMedium())
+                .imageURLLarge(bookImageDto.getImageURLLarge())
+                .coverImagePath(bookImageDto.getCoverImagePath())
+                .thumbnailPath(bookImageDto.getThumbnailPath())
+                .type(bookImageDto.getType())
+                .coverImageSizeBytes(bookImageDto.getCoverImageSizeBytes())
+                .thumbnailSizeBytes(bookImageDto.getThumbnailSizeBytes())
+                .build();
+
     }
 
     public static List<BookImageDto> mapToDtoList(List<BookImageEntity> bookImageEntities) {

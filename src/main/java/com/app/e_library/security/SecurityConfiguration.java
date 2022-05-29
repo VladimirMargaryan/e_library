@@ -2,6 +2,7 @@ package com.app.e_library.security;
 
 import com.app.e_library.security.filter.AuthenticationFilter;
 import com.app.e_library.security.filter.AuthorizationFilter;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,22 +25,23 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 )
 @Configuration
 @EnableWebSecurity
+@AllArgsConstructor
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
     private final JWTUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
 
-    public SecurityConfiguration(UserDetailsService userDetailsService, JWTUtil jwtUtil, PasswordEncoder passwordEncoder) {
-        this.userDetailsService = userDetailsService;
-        this.jwtUtil = jwtUtil;
-        this.passwordEncoder = passwordEncoder;
-    }
-
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManager(), jwtUtil);
+
+        AuthenticationFilter authenticationFilter = AuthenticationFilter
+                .builder()
+                .authenticationManager(authenticationManager())
+                .jwtUtil(jwtUtil)
+                .build();
+
         authenticationFilter.setFilterProcessesUrl("/login");
 
         http
@@ -53,7 +55,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(authenticationFilter)
-                .addFilterBefore(new AuthorizationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(
+                        AuthorizationFilter.builder().jwtUtil(jwtUtil).build(),
+                        UsernamePasswordAuthenticationFilter.class
+                );
     }
 
 

@@ -8,11 +8,13 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Builder
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
+@EqualsAndHashCode
 @AllArgsConstructor
+@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BookDto {
 
@@ -38,54 +40,75 @@ public class BookDto {
         this.publicationYear = publicationYear;
         this.pageCount = pageCount;
         this.bookStatus = bookStatus;
-        this.imageDto = new BookImageDto(imageUrlSmall, imageUrlLarge);
-        this.bookGenre = new BookGenreDto(genre);
-        this.author = new AuthorDto(author);
-        this.publisher = new PublisherDto(publisher);
+
+        this.imageDto = BookImageDto
+                .builder()
+                .imageURLSmall(imageUrlSmall)
+                .imageURLLarge(imageUrlLarge)
+                .build();
+
+        this.bookGenre = BookGenreDto
+                .builder()
+                .name(genre)
+                .build();
+
+        this.author = AuthorDto
+                .builder()
+                .name(author)
+                .build();
+
+        this.publisher = PublisherDto
+                .builder()
+                .publisherName(publisher)
+                .build();
     }
 
     public static BookDto mapToDto(BookEntity bookEntity){
-        BookDto bookDto = new BookDto();
-        bookDto.setId(bookEntity.getId());
-        bookDto.setIsbn(bookEntity.getIsbn());
-        bookDto.setTitle(bookEntity.getTitle());
-        bookDto.setPublicationYear(bookEntity.getPublicationYear());
-        bookDto.setPageCount(bookEntity.getPageCount());
-        bookDto.setBookGenre(BookGenreDto.mapToDto(bookEntity.getBookGenre()));
-        bookDto.setBookStatus(bookEntity.getBookStatus());
-        if (bookEntity.getPickDetail() != null)
-            bookDto.setPickDetail(PickDetailDto.mapToDto(bookEntity.getPickDetail()));
-        bookDto.setPublisher(PublisherDto.mapToDto(bookEntity.getPublisher()));
-        bookDto.setAuthor(AuthorDto.mapToDto(bookEntity.getAuthor()));
-        bookDto.setImageDto(BookImageDto.mapToDto(bookEntity.getBookImage()));
-        return bookDto;
+
+        return BookDto
+                .builder()
+                .id(bookEntity.getId())
+                .isbn(bookEntity.getIsbn())
+                .title(bookEntity.getTitle())
+                .publicationYear(bookEntity.getPublicationYear())
+                .pageCount(bookEntity.getPageCount())
+                .bookGenre(BookGenreDto.mapToDto(bookEntity.getBookGenre()))
+                .bookStatus(bookEntity.getBookStatus())
+                .pickDetail(bookEntity.getPickDetail() == null ? PickDetailDto
+                        .builder()
+                        .build() : PickDetailDto.mapToDto(bookEntity.getPickDetail()))
+                .publisher(PublisherDto.mapToDto(bookEntity.getPublisher()))
+                .author(AuthorDto.mapToDto(bookEntity.getAuthor()))
+                .imageDto(BookImageDto.mapToDto(bookEntity.getBookImage()))
+                .build();
     }
 
     public static BookEntity mapToEntity(BookDto bookDto){
-        BookEntity bookEntity = new BookEntity();
-        bookEntity.setId(bookDto.getId());
-        bookEntity.setIsbn(bookDto.getIsbn());
-        bookEntity.setTitle(bookDto.getTitle());
-        bookEntity.setPublicationYear(bookDto.getPublicationYear());
-        bookEntity.setPageCount(bookDto.getPageCount());
-        bookEntity.setBookStatus(bookDto.getBookStatus());
 
-        if (bookDto.getBookGenre() != null)
-            bookEntity.setBookGenre(BookGenreDto.mapToEntity(bookDto.getBookGenre()));
-
-        if (bookDto.getPublisher() != null)
-            bookEntity.setPublisher(PublisherDto.mapToEntity(bookDto.getPublisher()));
-
-        if (bookDto.getAuthor() != null)
-            bookEntity.setAuthor(AuthorDto.mapToEntity(bookDto.getAuthor()));
-
-        if (bookDto.getPickDetail() != null)
-            bookEntity.setPickDetail(PickDetailDto.mapToEntity(bookDto.getPickDetail()));
-
-        if (bookDto.getImageDto() != null)
-            bookEntity.setBookImage(BookImageDto.mapToEntity(bookDto.getImageDto()));
-
-        return bookEntity;
+        return BookEntity
+                .builder()
+                .id(bookDto.getId())
+                .isbn(bookDto.getIsbn())
+                .title(bookDto.getTitle())
+                .publicationYear(bookDto.getPublicationYear())
+                .pageCount(bookDto.getPageCount())
+                .bookStatus(bookDto.getBookStatus())
+                .bookGenre(bookDto.getBookGenre() == null ? BookGenreEntity
+                        .builder()
+                        .build() : BookGenreDto.mapToEntity(bookDto.getBookGenre()))
+                .pickDetail(bookDto.getPickDetail() == null ? PickDetailEntity
+                        .builder()
+                        .build() : PickDetailDto.mapToEntity(bookDto.getPickDetail()))
+                .publisher(bookDto.getPublisher() == null ? PublisherEntity
+                        .builder()
+                        .build() : PublisherDto.mapToEntity(bookDto.getPublisher()))
+                .author(bookDto.getAuthor() == null ? AuthorEntity
+                        .builder()
+                        .build() : AuthorDto.mapToEntity(bookDto.getAuthor()))
+                .bookImage(bookDto.getImageDto() == null ? BookImageEntity
+                        .builder()
+                        .build() : BookImageDto.mapToEntity(bookDto.getImageDto()))
+                .build();
     }
 
     public static List<BookDto> mapToDtoList(List<BookEntity> bookEntities){

@@ -3,20 +3,17 @@ package com.app.e_library.service;
 import com.app.e_library.exception.NotFoundException;
 import com.app.e_library.persistence.AddressRepository;
 import com.app.e_library.service.dto.AddressDto;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class AddressService {
 
     private final AddressRepository addressRepository;
-
-    public AddressService(AddressRepository addressRepository) {
-        this.addressRepository = addressRepository;
-    }
-
 
     public List<AddressDto> getAll() {
         return AddressDto.mapToDtoList(addressRepository.findAll());

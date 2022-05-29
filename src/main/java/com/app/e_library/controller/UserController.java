@@ -6,6 +6,7 @@ import com.app.e_library.persistence.pagination.UserSearchCriteria;
 import com.app.e_library.service.UserService;
 import com.app.e_library.service.dto.UserDto;
 import com.app.e_library.validation.UserValidator;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,14 +19,11 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/users")
+@AllArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
     @PostMapping("/parse/csv")
     @PreAuthorize("hasAnyRole('ADMIN')")
@@ -52,9 +50,6 @@ public class UserController {
 
         return ResponseEntity.ok().headers(responseHeaders).body(userPageResponse.getPage());
     }
-
-
-
 
     @GetMapping("/search")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'USER')")

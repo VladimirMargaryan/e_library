@@ -8,37 +8,31 @@ import lombok.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode
+@Data
+@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PublisherDto {
 
     private Long id;
     private String publisherName;
 
-    public PublisherDto(String publisherName) {
-        this.publisherName = publisherName;
-    }
 
     public static PublisherDto mapToDto(PublisherEntity publisherEntity) {
-        PublisherDto publisherDto = new PublisherDto();
-        publisherDto.setId(publisherEntity.getId());
-        publisherDto.setPublisherName(publisherEntity.getPublisherName());
 
-        return publisherDto;
+        return PublisherDto
+                .builder()
+                .id(publisherEntity.getId())
+                .publisherName(publisherEntity.getPublisherName())
+                .build();
     }
 
     public static PublisherEntity mapToEntity(PublisherDto publisherDto) {
 
-        PublisherEntity publisherEntity = new PublisherEntity();
-        publisherEntity.setId(publisherDto.getId());
-        publisherEntity.setPublisherName(publisherDto.getPublisherName());
-
-        return publisherEntity;
+        return PublisherEntity
+                .builder()
+                .id(publisherDto.getId())
+                .publisherName(publisherDto.getPublisherName())
+                .build();
     }
 
     public static List<PublisherDto> mapToDtoList(List<PublisherEntity> publisherEntities){

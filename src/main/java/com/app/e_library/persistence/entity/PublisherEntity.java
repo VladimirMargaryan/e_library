@@ -10,6 +10,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -38,9 +39,6 @@ public class PublisherEntity {
     @ToString.Exclude
     private List<BookEntity> books;
 
-    public PublisherEntity(String publisherName) {
-        this.publisherName = publisherName;
-    }
 
     @Override
     public boolean equals(Object o) {

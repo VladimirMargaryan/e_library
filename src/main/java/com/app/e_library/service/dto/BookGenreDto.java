@@ -7,36 +7,31 @@ import lombok.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode
+@Data
+@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BookGenreDto {
 
     private Long id;
     private String name;
 
-    public BookGenreDto(String name) {
-        this.name = name;
-    }
 
     public static BookGenreDto mapToDto(BookGenreEntity bookGenreEntity){
-        BookGenreDto bookGenreDto = new BookGenreDto();
-        bookGenreDto.setId(bookGenreEntity.getId());
-        bookGenreDto.setName(bookGenreEntity.getName());
 
-        return bookGenreDto;
+        return BookGenreDto
+                .builder()
+                .id(bookGenreEntity.getId())
+                .name(bookGenreEntity.getName())
+                .build();
     }
 
     public static BookGenreEntity mapToEntity(BookGenreDto bookGenreDto){
-        BookGenreEntity bookGenreEntity = new BookGenreEntity();
-        bookGenreEntity.setId(bookGenreDto.getId());
-        bookGenreEntity.setName(bookGenreDto.getName());
 
-        return bookGenreEntity;
+        return BookGenreEntity
+                .builder()
+                .id(bookGenreDto.getId())
+                .name(bookGenreDto.getName())
+                .build();
     }
 
     public static List<BookGenreDto> mapToDtoList(List<BookGenreEntity> bookGenreEntities) {

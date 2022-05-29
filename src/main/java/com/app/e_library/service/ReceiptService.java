@@ -3,19 +3,18 @@ package com.app.e_library.service;
 import com.app.e_library.exception.NotFoundException;
 import com.app.e_library.persistence.ReceiptRepository;
 import com.app.e_library.service.dto.ReceiptDto;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class ReceiptService {
 
     private final ReceiptRepository receiptRepository;
 
-    public ReceiptService(ReceiptRepository receiptRepository) {
-        this.receiptRepository = receiptRepository;
-    }
 
     public List<ReceiptDto> getAll() {
         return ReceiptDto.mapToDtoList(receiptRepository.findAll());

@@ -14,6 +14,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -90,37 +91,6 @@ public class BookEntity {
     @ToString.Exclude
     private List<ReceiptEntity> receipts;
 
-
-    public BookEntity(String isbn, String title, short publicationYear,
-                      int pageCount,BookGenreEntity bookGenre,
-                      BookStatusType bookStatus, @NonNull PublisherEntity publisher,
-                      @NonNull AuthorEntity author) {
-
-        this.isbn = isbn;
-        this.title = title;
-        this.publicationYear = publicationYear;
-        this.pageCount = pageCount;
-        this.bookGenre = bookGenre;
-        this.bookStatus = bookStatus;
-        this.publisher = publisher;
-        this.author = author;
-    }
-
-    public BookEntity(String isbn, String title, short publicationYear,
-                      int pageCount, BookGenreEntity bookGenre, BookStatusType bookStatus,
-                      @NonNull PublisherEntity publisher, @NonNull AuthorEntity author,
-                      BookImageEntity bookImage) {
-
-        this.isbn = isbn;
-        this.title = title;
-        this.publicationYear = publicationYear;
-        this.pageCount = pageCount;
-        this.bookGenre = bookGenre;
-        this.bookStatus = bookStatus;
-        this.publisher = publisher;
-        this.author = author;
-        this.bookImage = bookImage;
-    }
 
     @Override
     public boolean equals(Object o) {

@@ -4,6 +4,7 @@ package com.app.e_library.security;
 import com.app.e_library.service.UserService;
 import com.app.e_library.service.dto.UserDto;
 import com.app.e_library.service.dto.UserStatusType;
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,14 +16,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 @Component("userDetailsService")
+@AllArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserService userService;
-
-    public CustomUserDetailsService(UserService userService) {
-        this.userService = userService;
-    }
-
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException{

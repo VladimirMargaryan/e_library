@@ -11,6 +11,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -39,14 +40,6 @@ public class CityEntity {
     @ToString.Exclude
     private List<AddressEntity> addresses;
 
-    public CityEntity(Long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
-    public CityEntity(String city) {
-        this.name = city;
-    }
 
     @Override
     public boolean equals(Object o) {

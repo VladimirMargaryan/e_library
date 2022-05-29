@@ -13,9 +13,10 @@ import java.util.Objects;
 @Table(name = "book_image")
 @Getter
 @Setter
+@ToString
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 public class BookImageEntity {
 
     @Id
@@ -59,16 +60,6 @@ public class BookImageEntity {
     @ToString.Exclude
     private BookEntity book;
 
-    public BookImageEntity(BookImageDownloadStatus imageDownloadStatus,
-                           String imageURLSmall,
-                           String imageURLMedium,
-                           String imageURLLarge) {
-
-        this.imageDownloadStatus = imageDownloadStatus;
-        this.imageURLSmall = imageURLSmall;
-        this.imageURLMedium = imageURLMedium;
-        this.imageURLLarge = imageURLLarge;
-    }
 
     @Override
     public boolean equals(Object o) {

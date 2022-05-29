@@ -7,34 +7,31 @@ import lombok.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode
+@Data
+@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CityDto {
 
     private Long id;
     private String cityName;
 
-    public CityDto(String cityName) {
-        this.cityName = cityName;
-    }
 
     public static CityDto mapToDto(CityEntity cityEntity){
-        return new CityDto(
-                cityEntity.getId(),
-                cityEntity.getName()
-        );
+
+        return CityDto
+                .builder()
+                .id(cityEntity.getId())
+                .cityName(cityEntity.getName())
+                .build();
     }
 
     public static CityEntity mapToEntityList(CityDto cityDto){
-        return new CityEntity(
-                cityDto.getId(),
-                cityDto.getCityName()
-        );
+
+        return CityEntity
+                .builder()
+                .id(cityDto.getId())
+                .name(cityDto.getCityName())
+                .build();
     }
 
     public static List<CityDto> mapToDtoList(List<CityEntity> cityEntities){

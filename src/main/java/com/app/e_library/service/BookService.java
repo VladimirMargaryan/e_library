@@ -53,11 +53,13 @@ public class BookService {
                        BookGenreRepository bookGenreRepository,
                        PublisherRepository publisherRepository,
                        AuthorRepository authorRepository) {
+
         this.bookRepository = bookRepository;
         this.bookGenreRepository = bookGenreRepository;
         this.publisherRepository = publisherRepository;
         this.authorRepository = authorRepository;
     }
+
 
     public PageResponse<BookDto> getAllBooks(PageRequest pageRequest) {
         return new PageResponse<>(BookDto.mapToDtoPage(bookRepository.findAll(pageRequest.getPageable())));
@@ -159,25 +161,37 @@ public class BookService {
                 String publisher = csvRecord.get("Publisher").trim();
                 int pageCount = (int) ((Math.random() * (4000 - 50)) + 50);
 
-                AuthorEntity authorEntity = new AuthorEntity(author);
-                PublisherEntity publisherEntity = new PublisherEntity(publisher);
+                AuthorEntity authorEntity = AuthorEntity.builder()
+                        .name(author)
+                        .build();
+
+                PublisherEntity publisherEntity = PublisherEntity.builder()
+                        .publisherName(publisher)
+                        .build();
+
                 BookGenreEntity bookGenreEntity = bookGenreEntities.get(random.nextInt(bookGenreEntities.size()));
-                BookImageEntity bookImageEntity = new BookImageEntity(BookImageDownloadStatus.TODO, imageURLSmall, imageURLMedium, imageURLLarge);
+
+                BookImageEntity bookImageEntity = BookImageEntity.builder()
+                        .imageDownloadStatus(BookImageDownloadStatus.TODO)
+                        .imageURLSmall(imageURLSmall)
+                        .imageURLMedium(imageURLMedium)
+                        .imageURLLarge(imageURLLarge)
+                        .build();
 
                 publisherEntities.add(publisherEntity);
                 authorEntities.add(authorEntity);
 
-                bookEntity = new BookEntity(
-                        isbn,
-                        title,
-                        publicationYear,
-                        pageCount,
-                        bookGenreEntity,
-                        BookStatusType.CHECKED_IN,
-                        publisherEntity,
-                        authorEntity,
-                        bookImageEntity
-                );
+                bookEntity = BookEntity.builder()
+                        .isbn(isbn)
+                        .title(title)
+                        .publicationYear(publicationYear)
+                        .pageCount(pageCount)
+                        .bookGenre(bookGenreEntity)
+                        .bookStatus(BookStatusType.CHECKED_IN)
+                        .publisher(publisherEntity)
+                        .author(authorEntity)
+                        .bookImage(bookImageEntity)
+                        .build();
 
                 bookEntities.add(bookEntity);
 
@@ -307,12 +321,11 @@ public class BookService {
         bookEntitiesForImageDownload.forEach(bookEntity -> {
 
             String imageName = bookEntity.getId().toString();
+            Path imagePath = Paths.get(coverImagesDirectory + File.separator + "image-" + imageName + ".jpg");
 
-            try {
-                Path imagePath = Paths.get(coverImagesDirectory + File.separator + "image-" + imageName + ".jpg");
+            try (FileOutputStream outputStream = new FileOutputStream(imagePath.toString())) {
+
                 byte[] imageByteArray = downloadImage(new URL(bookEntity.getBookImage().getImageURLLarge()));
-
-                FileOutputStream outputStream = new FileOutputStream(imagePath.toString());
                 outputStream.write(imageByteArray);
 
                 File coverImage = imagePath.toFile();
@@ -320,12 +333,13 @@ public class BookService {
                 Path thumbnailPath = createThumbnail(
                         ImageIO.read(coverImage), thumbnailImagesDirectory, imageName);
 
-                BookImageEntity bookImageEntity = new BookImageEntity();
-                bookImageEntity.setCoverImagePath(imagePath.toString());
-                bookImageEntity.setThumbnailPath(thumbnailPath.toString());
-                bookImageEntity.setCoverImageSizeBytes(Files.size(imagePath));
-                bookImageEntity.setThumbnailSizeBytes(Files.size(thumbnailPath));
-                bookImageEntity.setType(FilenameUtils.getExtension(coverImage.getName()));
+                BookImageEntity bookImageEntity = BookImageEntity.builder()
+                        .coverImagePath(imagePath.toString())
+                        .thumbnailPath(thumbnailPath.toString())
+                        .coverImageSizeBytes(Files.size(imagePath))
+                        .thumbnailSizeBytes(Files.size(thumbnailPath))
+                        .type(FilenameUtils.getExtension(coverImage.getName()))
+                        .build();
 
                 bookEntity.setBookImage(bookImageEntity);
                 bookEntity.getBookImage().setImageDownloadStatus(BookImageDownloadStatus.DONE);

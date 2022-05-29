@@ -4,19 +4,17 @@ import com.app.e_library.exception.NotFoundException;
 import com.app.e_library.persistence.AuthorRepository;
 import com.app.e_library.persistence.entity.AuthorEntity;
 import com.app.e_library.service.dto.AuthorDto;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class AuthorService {
 
     private final AuthorRepository authorRepository;
-
-    public AuthorService(AuthorRepository authorRepository) {
-        this.authorRepository = authorRepository;
-    }
 
     public List<AuthorDto> getAll() {
         return AuthorDto.mapToDtoList(authorRepository.findAll());

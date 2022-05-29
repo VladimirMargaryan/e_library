@@ -5,19 +5,18 @@ import com.app.e_library.exception.NotFoundException;
 import com.app.e_library.persistence.RoleRepository;
 import com.app.e_library.persistence.entity.RoleEntity;
 import com.app.e_library.service.dto.RoleDto;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class RoleService{
 
     private final RoleRepository repository;
 
-    public RoleService(RoleRepository repository) {
-        this.repository = repository;
-    }
 
     public List<RoleDto> getAll() {
         return RoleDto.mapToDtoList(repository.findAll());

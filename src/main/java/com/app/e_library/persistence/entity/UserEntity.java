@@ -17,6 +17,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -58,7 +59,7 @@ public class UserEntity {
 
     @Column(name = "register_date", nullable = false)
     @Valid
-    private Long registration_date;
+    private Long registrationDate;
 
     @Column(name = "phone", nullable = false)
     @NotBlank
@@ -116,58 +117,6 @@ public class UserEntity {
             orphanRemoval = true)
     @ToString.Exclude
     private List<ReceiptEntity> receipts;
-
-
-    public UserEntity(Long id, String firstname, String lastname, String ssn,
-                      String email, String password, Long registration_date, String phone,
-                      String resetPasswordToken, Long resetPasswordTokenCreationDate,
-                      AddressEntity address, UserStatusType userStatus, RoleEntity role) {
-
-        this.id = id;
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.ssn = ssn;
-        this.email = email;
-        this.password = password;
-        this.registration_date = registration_date;
-        this.phone = phone;
-        this.resetPasswordToken = resetPasswordToken;
-        this.resetPasswordTokenCreationDate = resetPasswordTokenCreationDate;
-        this.address = address;
-        this.userStatus = userStatus;
-        this.role = role;
-    }
-
-    public UserEntity(String firstname, String lastname, String ssn,
-                      String email, String password, Long registration_date,
-                      String phone, @NonNull AddressEntity address, UserStatusType
-                              userStatus, @NonNull RoleEntity role) {
-
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.ssn = ssn;
-        this.email = email;
-        this.password = password;
-        this.registration_date = registration_date;
-        this.phone = phone;
-        this.address = address;
-        this.userStatus = userStatus;
-        this.role = role;
-    }
-
-    public UserEntity(String firstname, String lastname, String ssn,
-                      String email, String password, Long registration_date,
-                      String phone, UserStatusType userStatus) {
-
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.ssn = ssn;
-        this.email = email;
-        this.password = password;
-        this.registration_date = registration_date;
-        this.phone = phone;
-        this.userStatus = userStatus;
-    }
 
     @Override
     public boolean equals(Object o) {

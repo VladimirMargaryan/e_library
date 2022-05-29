@@ -13,6 +13,7 @@ import com.app.e_library.persistence.pagination.PageRequest;
 import com.app.e_library.persistence.pagination.PageResponse;
 import com.app.e_library.persistence.pagination.UserSearchCriteria;
 import com.app.e_library.service.dto.*;
+import lombok.AllArgsConstructor;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -32,6 +33,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
@@ -40,18 +42,6 @@ public class UserService {
     private final CityRepository cityRepository;
     private final AddressRepository addressRepository;
 
-    public UserService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder,
-                       RoleRepository roleRepository,
-                       CityRepository cityRepository,
-                       AddressRepository addressRepository) {
-
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.roleRepository = roleRepository;
-        this.cityRepository = cityRepository;
-        this.addressRepository = addressRepository;
-    }
 
     public PageResponse<UserDto> getAllUsers(PageRequest pageRequest) {
         return new PageResponse<>(UserDto.mapToDtoPage(userRepository.findAll(pageRequest.getPageable())));
@@ -102,7 +92,7 @@ public class UserService {
         user.setSsn(userDto.getSsn());
         user.setEmail(userDto.getEmail());
         user.setPassword(userDto.getPassword());
-        user.setRegistration_date(userDto.getRegistration_date());
+        user.setRegistrationDate(userDto.getRegistrationDate());
         user.setPhone(userDto.getPhone());
         user.setResetPasswordToken(userDto.getResetPasswordToken());
         user.setResetPasswordTokenCreationDate(userDto.getResetPasswordTokenCreationDate());
@@ -166,24 +156,35 @@ public class UserService {
                 int streetNumber = Integer.parseInt(csvRecord.get("street_number"));
 
 
-                CityEntity cityEntity = new CityEntity(city);
-                AddressEntity addressEntity = new AddressEntity(cityEntity, street, streetNumber);
+                CityEntity cityEntity = CityEntity
+                        .builder()
+                        .name(city)
+                        .build();
+
+                AddressEntity addressEntity = AddressEntity
+                        .builder()
+                        .city(cityEntity)
+                        .street(street)
+                        .streetNumber(streetNumber)
+                        .build();
 
                 cityEntities.add(cityEntity);
                 addressEntities.add(addressEntity);
 
-                userEntity = new UserEntity(
-                        firstname,
-                        lastname,
-                        ssn,
-                        email,
-                        password,
-                        registrationDate,
-                        phoneNumber,
-                        addressEntity,
-                        UserStatusType.VERIFIED,
-                        roleEntity
-                );
+                userEntity = UserEntity
+                        .builder()
+                        .firstname(firstname)
+                        .lastname(lastname)
+                        .ssn(ssn)
+                        .email(email)
+                        .password(password)
+                        .registrationDate(registrationDate)
+                        .phone(phoneNumber)
+                        .address(addressEntity)
+                        .userStatus(UserStatusType.VERIFIED)
+                        .role(roleEntity)
+                        .build();
+
                 userEntities.add(userEntity);
             }
         }
