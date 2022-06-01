@@ -6,6 +6,10 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import java.util.Objects;
 
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.FetchType.LAZY;
+import static javax.persistence.GenerationType.IDENTITY;
+
 @Entity
 @Getter
 @Setter
@@ -17,20 +21,23 @@ import java.util.Objects;
 public class PickDetailEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @OneToOne(mappedBy = "pickDetail", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(
+            mappedBy = "pickDetail",
+            cascade = ALL,
+            fetch = LAZY)
     @ToString.Exclude
     private BookEntity book;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = ALL, fetch = LAZY)
     @JoinColumn(name = "pivked_by_user", nullable = false)
     @NonNull
     @ToString.Exclude
     private UserEntity usedByUser;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = ALL, fetch = LAZY)
     @JoinColumn(name = "reserved_by_user", nullable = false)
     @NonNull
     @ToString.Exclude

@@ -11,6 +11,11 @@ import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Objects;
 
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.EnumType.STRING;
+import static javax.persistence.FetchType.LAZY;
+import static javax.persistence.GenerationType.IDENTITY;
+
 @Getter
 @Setter
 @ToString
@@ -31,7 +36,7 @@ import java.util.Objects;
 public class BookEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     @Column(name = "isbn", nullable = false)
@@ -51,42 +56,41 @@ public class BookEntity {
     @Range(min = 50, max = 5000)
     private int pageCount;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name="genre_id", nullable=false)
     @ToString.Exclude
     private BookGenreEntity bookGenre;
 
     @Column(name = "book_status", nullable = false)
-    @Enumerated(EnumType.STRING)
+    @Enumerated(STRING)
     private BookStatusType bookStatus;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = ALL, fetch = LAZY)
     @JoinColumn(name = "publisher_id", nullable = false)
     @NonNull
     @ToString.Exclude
     private PublisherEntity publisher;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToOne(cascade = ALL, fetch = LAZY, orphanRemoval = true)
     @JoinColumn(name = "pick_detail_id")
     @ToString.Exclude
     private PickDetailEntity pickDetail;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = ALL, fetch = LAZY)
     @JoinColumn(name = "author_id", nullable = false)
     @NonNull
     @ToString.Exclude
     private AuthorEntity author;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToOne(cascade = ALL, fetch = LAZY, orphanRemoval = true)
     @JoinColumn(name = "book_image_id")
     @ToString.Exclude
     private BookImageEntity bookImage;
 
     @OneToMany(
-            targetEntity = ReceiptEntity.class,
             mappedBy = "book",
-            cascade=CascadeType.ALL,
-            fetch = FetchType.LAZY,
+            cascade = ALL,
+            fetch = LAZY,
             orphanRemoval = true)
     @ToString.Exclude
     private List<ReceiptEntity> receipts;

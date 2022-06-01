@@ -10,6 +10,10 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
+import static javax.persistence.EnumType.STRING;
+import static javax.persistence.FetchType.LAZY;
+import static javax.persistence.GenerationType.IDENTITY;
+
 @Entity
 @Table(name = "book_image")
 @Getter
@@ -21,11 +25,11 @@ import java.util.Objects;
 public class BookImageEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     @Column(name = "image_downlad_status")
-    @Enumerated(EnumType.STRING)
+    @Enumerated(STRING)
     private BookImageDownloadStatus imageDownloadStatus;
 
     @Column(name = "image_download_start_time")
@@ -60,7 +64,7 @@ public class BookImageEntity {
     @Valid
     private Long thumbnailSizeBytes;
 
-    @OneToOne(mappedBy = "bookImage", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "bookImage", fetch = LAZY)
     @ToString.Exclude
     private BookEntity book;
 

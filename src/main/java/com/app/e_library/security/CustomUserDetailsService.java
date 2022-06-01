@@ -27,7 +27,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (user != null && !user.getStatus().equals(UserStatusType.UNVERIFIED)) {
             Collection<GrantedAuthority> grantedAuthorities = new ArrayList<>();
             grantedAuthorities.add(new SimpleGrantedAuthority(user.getRole().getRollName()));
-            return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), grantedAuthorities);
+            return new org.springframework.security.core.userdetails
+                    .User(user.getEmail(), user.getPassword(), grantedAuthorities);
         } else
             throw new UsernameNotFoundException("Username not found!");
     }

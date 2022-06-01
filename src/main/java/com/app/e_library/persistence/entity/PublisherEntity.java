@@ -7,6 +7,10 @@ import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Objects;
 
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.FetchType.LAZY;
+import static javax.persistence.GenerationType.IDENTITY;
+
 @Getter
 @Setter
 @ToString
@@ -23,7 +27,7 @@ import java.util.Objects;
 public class PublisherEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     @Column(name = "publisher_name", nullable = false)
@@ -31,10 +35,9 @@ public class PublisherEntity {
     private String publisherName;
 
     @OneToMany(
-            targetEntity = BookEntity.class,
             mappedBy = "publisher",
-            cascade=CascadeType.ALL,
-            fetch = FetchType.LAZY,
+            cascade = ALL,
+            fetch = LAZY,
             orphanRemoval = true)
     @ToString.Exclude
     private List<BookEntity> books;

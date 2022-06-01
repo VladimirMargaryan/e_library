@@ -6,6 +6,10 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.Objects;
 
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.FetchType.LAZY;
+import static javax.persistence.GenerationType.IDENTITY;
+
 @Getter
 @Setter
 @ToString
@@ -17,7 +21,7 @@ import java.util.Objects;
 public class ReceiptEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     @Column(name = "order_date", nullable = false)
@@ -26,13 +30,13 @@ public class ReceiptEntity {
     @Column(name = "expiration_date", nullable = false)
     private Long expirationDate;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = ALL, fetch = LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @NonNull
     @ToString.Exclude
     private UserEntity user;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = ALL, fetch = LAZY)
     @JoinColumn(name = "book_id", nullable = false)
     @NonNull
     @ToString.Exclude

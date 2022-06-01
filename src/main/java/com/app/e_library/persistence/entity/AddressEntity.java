@@ -7,6 +7,10 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import java.util.Objects;
 
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.FetchType.LAZY;
+import static javax.persistence.GenerationType.IDENTITY;
+
 @Entity
 @Getter
 @Setter
@@ -25,10 +29,10 @@ import java.util.Objects;
 public class AddressEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = ALL, fetch = LAZY)
     @JoinColumn(name = "city_id", nullable = false)
     @ToString.Exclude
     @NonNull

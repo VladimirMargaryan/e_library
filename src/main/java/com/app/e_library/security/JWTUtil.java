@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @Component
 public class JWTUtil {
 
-    // 10 minute
+    // 20 minute
     @Value("${jwt.access_token.active.time}")
     private Duration accessTokenActiveTime;
 
@@ -76,7 +76,7 @@ public class JWTUtil {
         return verifyAndDecode(token).getExpiresAt();
     }
 
-    private Map<String, Claim> getClaims(String token) {
+    public Map<String, Claim> getClaims(String token) {
         return verifyAndDecode(token).getClaims();
     }
 

@@ -7,6 +7,10 @@ import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Objects;
 
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.FetchType.LAZY;
+import static javax.persistence.GenerationType.IDENTITY;
+
 @Getter
 @Setter
 @ToString
@@ -18,15 +22,12 @@ import java.util.Objects;
         name = "user_role",
         uniqueConstraints = {
                 @UniqueConstraint(name = "role_name_unique", columnNames = "name")
-        },
-        indexes = {
-                @Index(name = "name_idx", columnList = "name")
         }
 )
 public class RoleEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     @Column(name = "name", nullable = false)
@@ -34,10 +35,9 @@ public class RoleEntity {
     private String rollName;
 
     @OneToMany(
-            targetEntity = UserEntity.class,
             mappedBy = "role",
-            cascade=CascadeType.ALL,
-            fetch = FetchType.LAZY,
+            cascade = ALL,
+            fetch = LAZY,
             orphanRemoval = true)
     @ToString.Exclude
     private List<UserEntity> users;

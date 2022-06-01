@@ -16,6 +16,11 @@ import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Objects;
 
+import static javax.persistence.CascadeType.*;
+import static javax.persistence.EnumType.STRING;
+import static javax.persistence.FetchType.LAZY;
+import static javax.persistence.GenerationType.IDENTITY;
+
 @Getter
 @Setter
 @ToString
@@ -34,7 +39,7 @@ import java.util.Objects;
 public class UserEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     @Column(name = "first_name", nullable = false)
@@ -75,46 +80,44 @@ public class UserEntity {
     @Valid
     private Long resetPasswordTokenCreationDate;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToOne(cascade = ALL, fetch = LAZY, orphanRemoval = true)
     @JoinColumn(name = "address_id", nullable = false)
     @NonNull
     @ToString.Exclude
     private AddressEntity address;
 
     @Column(name = "user_status", nullable = false)
-    @Enumerated(EnumType.STRING)
+    @Enumerated(STRING)
     @NotBlank
     private UserStatusType userStatus;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {PERSIST, DETACH, REFRESH, MERGE},
+            fetch = LAZY)
     @JoinColumn(name = "role_id", nullable = false)
     @NonNull
     @ToString.Exclude
     private RoleEntity role;
 
     @OneToMany(
-            targetEntity = PickDetailEntity.class,
             mappedBy = "usedByUser",
-            cascade=CascadeType.ALL,
-            fetch = FetchType.LAZY,
+            cascade = ALL,
+            fetch = LAZY,
             orphanRemoval = true)
     @ToString.Exclude
     private List<PickDetailEntity> pickedBookDetails;
 
     @OneToMany(
-            targetEntity = PickDetailEntity.class,
             mappedBy = "reservedByUser",
-            cascade=CascadeType.ALL,
-            fetch = FetchType.LAZY,
+            cascade = ALL,
+            fetch = LAZY,
             orphanRemoval = true)
     @ToString.Exclude
     private List<PickDetailEntity> reservedBookDetails;
 
     @OneToMany(
-            targetEntity = ReceiptEntity.class,
             mappedBy = "user",
-            cascade=CascadeType.ALL,
-            fetch = FetchType.LAZY,
+            cascade = ALL,
+            fetch = LAZY,
             orphanRemoval = true)
     @ToString.Exclude
     private List<ReceiptEntity> receipts;
