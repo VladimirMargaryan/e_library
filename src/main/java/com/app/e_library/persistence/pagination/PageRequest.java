@@ -4,22 +4,16 @@ import lombok.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-@Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class PageRequest {
 
     private int page = 0;
     private int size = 20;
     private String sortBy = "id";
-    private String sortDirection = "asc";
+    private Sort.Direction sortDirection = Sort.Direction.ASC;
 
     public Pageable getPageable() {
-        Sort sort = Sort.by(sortBy).ascending();
-        if (sortDirection.equals("desc"))
-            sort = sort.descending();
-        return org.springframework.data.domain.PageRequest.of(page, size, sort);
+        return org.springframework.data.domain.PageRequest.of(page, size, sortDirection, sortBy);
     }
 
 }

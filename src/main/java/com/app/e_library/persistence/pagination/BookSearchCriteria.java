@@ -1,9 +1,8 @@
 package com.app.e_library.persistence.pagination;
 
-import lombok.*;
+import lombok.Setter;
 
-@EqualsAndHashCode(callSuper = true)
-@ToString
+@Setter
 public class BookSearchCriteria extends PageRequest {
 
     private String isbn;
@@ -12,17 +11,6 @@ public class BookSearchCriteria extends PageRequest {
     private String genre;
     private String author;
     private String publisher;
-
-    public BookSearchCriteria(String isbn, String title, Integer publicationYear,
-                              String genre, String author, String publisher) {
-
-        this.isbn = isbn;
-        this.title = title;
-        this.publicationYear = publicationYear;
-        this.genre = genre;
-        this.author = author;
-        this.publisher = publisher;
-    }
 
 
     public String getIsbn() {

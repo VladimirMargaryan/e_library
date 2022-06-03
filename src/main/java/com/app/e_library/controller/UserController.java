@@ -7,7 +7,6 @@ import com.app.e_library.service.UserService;
 import com.app.e_library.service.dto.UserDto;
 import com.app.e_library.validation.UserValidator;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,22 +42,19 @@ public class UserController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
-    public ResponseEntity<Page<UserDto>> getSllUsers(PageRequest pageRequest) {
+    public ResponseEntity<PageResponse<UserDto>> getSllUsers(PageRequest pageRequest) {
+        PageResponse<UserDto> pageResponse = userService.getAllUsers(pageRequest);
 
-        PageResponse<UserDto> userPageResponse = userService.getAllUsers(pageRequest);
-        HttpHeaders responseHeaders = new HttpHeaders(userPageResponse.buildHttpHeadersForPages());
-
-        return ResponseEntity.ok().headers(responseHeaders).body(userPageResponse.getPage());
+        return ResponseEntity.ok().headers(pageResponse.getPageHeaders()).body(pageResponse);
     }
 
     @GetMapping("/search")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE', 'USER')")
-    public ResponseEntity<Page<UserDto>> getUsersPage(UserSearchCriteria userSearchCriteria) {
+    public ResponseEntity<PageResponse<UserDto>> getUsersPage(UserSearchCriteria userSearchCriteria) {
 
-        PageResponse<UserDto> userPageResponse = userService.searchUsers(userSearchCriteria);
-        HttpHeaders responseHeaders = new HttpHeaders(userPageResponse.buildHttpHeadersForPages());
+        PageResponse<UserDto> pageResponse = userService.searchUsers(userSearchCriteria);
 
-        return ResponseEntity.ok().headers(responseHeaders).body(userPageResponse.getPage());
+        return ResponseEntity.ok().headers(pageResponse.getPageHeaders()).body(pageResponse);
     }
 
     @PostMapping

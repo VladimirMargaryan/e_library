@@ -41,20 +41,18 @@ public class BookController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('EMPLOYEE', 'USER')")
-    public ResponseEntity<Page<BookDto>> getAllBooks(PageRequest pageRequest) {
-        PageResponse<BookDto> bookPageResponse = bookService.getAllBooks(pageRequest);
-        HttpHeaders responseHeaders = new HttpHeaders(bookPageResponse.buildHttpHeadersForPages());
+    public ResponseEntity<PageResponse<BookDto>> getAllBooks(PageRequest pageRequest) {
+        PageResponse<BookDto> pageResponse = bookService.getAllBooks(pageRequest);
 
-        return ResponseEntity.ok().headers(responseHeaders).body(bookPageResponse.getPage());
+        return ResponseEntity.ok().headers(pageResponse.getPageHeaders()).body(pageResponse);
     }
 
     @GetMapping("/search")
     @PreAuthorize("hasAnyRole('EMPLOYEE', 'USER')")
-    public ResponseEntity<Page<BookDto>> searchBooks(BookSearchCriteria bookSearchCriteria) {
-        PageResponse<BookDto> bookPageResponse = bookService.searchBooks(bookSearchCriteria);
-        HttpHeaders responseHeaders = new HttpHeaders(bookPageResponse.buildHttpHeadersForPages());
+    public ResponseEntity<PageResponse<BookDto>> searchBooks(BookSearchCriteria bookSearchCriteria) {
+        PageResponse<BookDto> pageResponse = bookService.searchBooks(bookSearchCriteria);
 
-        return ResponseEntity.ok().headers(responseHeaders).body(bookPageResponse.getPage());
+        return ResponseEntity.ok().headers(pageResponse.getPageHeaders()).body(pageResponse);
     }
 
     @PostMapping

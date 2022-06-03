@@ -1,12 +1,8 @@
 package com.app.e_library.persistence.pagination;
 
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.Setter;
 
-@ToString
-@Builder
-@EqualsAndHashCode(callSuper = false)
+@Setter
 public class UserSearchCriteria extends PageRequest {
     private String firstname;
     private String lastname;
@@ -17,18 +13,6 @@ public class UserSearchCriteria extends PageRequest {
     private Integer streetNumber;
     private String city;
 
-    public UserSearchCriteria(String firstname, String lastname, String ssn, String email,
-                              String phone, String street, Integer streetNumber, String city) {
-
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.ssn = ssn;
-        this.email = email;
-        this.phone = phone;
-        this.street = street;
-        this.streetNumber = streetNumber;
-        this.city = city;
-    }
 
     public String getFirstname() {
         return firstname = firstname == null ? "" : firstname.replaceAll("\\s+", "").toLowerCase();
