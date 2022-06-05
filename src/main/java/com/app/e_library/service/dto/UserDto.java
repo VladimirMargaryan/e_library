@@ -1,7 +1,6 @@
 package com.app.e_library.service.dto;
 
 import com.app.e_library.persistence.entity.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import org.springframework.data.domain.Page;
@@ -28,10 +27,6 @@ public class UserDto {
     private String password;
     private Long registrationDate;
     private String phone;
-    @JsonIgnore
-    private String resetPasswordToken;
-    @JsonIgnore
-    private Long resetPasswordTokenCreationDate;
     private AddressDto address;
     private UserStatusType status;
     private RoleDto role;
@@ -69,8 +64,6 @@ public class UserDto {
                .password(userEntity.getPassword())
                .registrationDate(userEntity.getRegistrationDate())
                .phone(userEntity.getPhone())
-               .resetPasswordToken(userEntity.getResetPasswordToken())
-               .resetPasswordTokenCreationDate(userEntity.getResetPasswordTokenCreationDate())
                .address(AddressDto.mapToDto(userEntity.getAddress()))
                .status(userEntity.getUserStatus())
                .role(RoleDto.mapToDto(userEntity.getRole()))
@@ -89,8 +82,6 @@ public class UserDto {
                 .password(userDto.getPassword())
                 .registrationDate(userDto.getRegistrationDate())
                 .phone(userDto.getPhone())
-                .resetPasswordToken(userDto.getResetPasswordToken())
-                .resetPasswordTokenCreationDate(userDto.getResetPasswordTokenCreationDate())
                 .address(AddressDto.mapToEntity(userDto.getAddress()))
                 .userStatus(userDto.getStatus())
                 .role(RoleDto.mapToEntity(userDto.getRole()))

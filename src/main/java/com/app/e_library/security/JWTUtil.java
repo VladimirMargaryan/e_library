@@ -4,7 +4,6 @@ package com.app.e_library.security;
 import com.app.e_library.persistence.entity.UserEntity;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,7 +15,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -70,14 +68,6 @@ public class JWTUtil {
 
     public String[] getRoles(String token) {
         return verifyAndDecode(token).getClaim("ROLE").asArray(String.class);
-    }
-
-    public Date getExpirationDate(String token) {
-        return verifyAndDecode(token).getExpiresAt();
-    }
-
-    public Map<String, Claim> getClaims(String token) {
-        return verifyAndDecode(token).getClaims();
     }
 
     public Boolean validateToken(String authorizationHeader) {

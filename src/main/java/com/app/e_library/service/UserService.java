@@ -94,8 +94,6 @@ public class UserService {
         user.setPassword(userDto.getPassword());
         user.setRegistrationDate(userDto.getRegistrationDate());
         user.setPhone(userDto.getPhone());
-        user.setResetPasswordToken(userDto.getResetPasswordToken());
-        user.setResetPasswordTokenCreationDate(userDto.getResetPasswordTokenCreationDate());
         user.setAddress(userDto.getAddress());
         user.setStatus(userDto.getStatus());
         user.setRole(userDto.getRole());

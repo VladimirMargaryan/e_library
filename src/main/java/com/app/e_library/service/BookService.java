@@ -1,12 +1,17 @@
 package com.app.e_library.service;
 
 import com.app.e_library.exception.NotFoundException;
-import com.app.e_library.persistence.*;
+import com.app.e_library.persistence.AuthorRepository;
+import com.app.e_library.persistence.BookGenreRepository;
+import com.app.e_library.persistence.BookRepository;
+import com.app.e_library.persistence.PublisherRepository;
 import com.app.e_library.persistence.entity.*;
 import com.app.e_library.persistence.pagination.BookSearchCriteria;
 import com.app.e_library.persistence.pagination.PageRequest;
 import com.app.e_library.persistence.pagination.PageResponse;
-import com.app.e_library.service.dto.*;
+import com.app.e_library.service.dto.BookDto;
+import com.app.e_library.service.dto.BookImageDownloadStatus;
+import com.app.e_library.service.dto.BookStatusType;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -16,20 +21,21 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -69,13 +75,13 @@ public class BookService {
     public PageResponse<BookDto> searchBooks(BookSearchCriteria bookSearchCriteria) {
 
         Page<BookDto> bookPage = bookRepository.searchBook(
-                    bookSearchCriteria.getIsbn(),
-                    bookSearchCriteria.getTitle(),
-                    bookSearchCriteria.getPublicationYear(),
-                    bookSearchCriteria.getGenre(),
-                    bookSearchCriteria.getAuthor(),
-                    bookSearchCriteria.getPublisher(),
-                    bookSearchCriteria.getPageable()
+                bookSearchCriteria.getIsbn(),
+                bookSearchCriteria.getTitle(),
+                bookSearchCriteria.getPublicationYear(),
+                bookSearchCriteria.getGenre(),
+                bookSearchCriteria.getAuthor(),
+                bookSearchCriteria.getPublisher(),
+                bookSearchCriteria.getPageable()
         );
 
         return new PageResponse<>(bookPage);
@@ -149,7 +155,7 @@ public class BookService {
 
         BookEntity bookEntity;
         if (csvRecords != null) {
-            for (CSVRecord csvRecord : csvRecords){
+            for (CSVRecord csvRecord : csvRecords) {
 
                 String isbn = csvRecord.get("ISBN").trim();
                 String title = csvRecord.get("Book-Title").trim();
@@ -202,7 +208,7 @@ public class BookService {
 
     public void saveBooks(List<BookEntity> bookEntities,
                           List<PublisherEntity> publisherEntities,
-                          List<AuthorEntity>  authorEntities){
+                          List<AuthorEntity> authorEntities) {
 
         // filtering Books
         List<BookEntity> uniqueBookEntities = bookEntities.stream()
@@ -240,29 +246,25 @@ public class BookService {
         bookRepository.saveAll(uniqueBookEntities);
     }
 
-    @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = Throwable.class)
     public void downloadBooksImages() throws IOException {
 
 
         List<BookEntity> firstNBooksByImageDownloadStatus =
-                bookRepository.getFirstNBooksByImageDownloadStatus(Pageable.ofSize(10_000));
+                bookRepository.getFirstNBooksByImageDownloadStatus(Pageable.ofSize(1000));
 
         firstNBooksByImageDownloadStatus.forEach(bookEntity -> {
             bookEntity.getBookImage().setImageDownloadStatus(BookImageDownloadStatus.IN_PROGRESS);
             bookEntity.getBookImage().setImageDownloadStartTime(System.currentTimeMillis());
         });
 
-        if (!firstNBooksByImageDownloadStatus.isEmpty()){
+        if (!firstNBooksByImageDownloadStatus.isEmpty()) {
             bookRepository.saveAll(firstNBooksByImageDownloadStatus);
             doDownload(firstNBooksByImageDownloadStatus);
-            bookRepository.saveAll(firstNBooksByImageDownloadStatus);
         }
     }
 
 
-    @Transactional(isolation = Isolation.REPEATABLE_READ, rollbackFor = Throwable.class)
     public void handleFailover() throws IOException {
-
 
         List<BookEntity> imageDownloadFailedBooks =
                 bookRepository.getImageDownloadFailedBooks(System.currentTimeMillis(), Pageable.ofSize(100));
@@ -273,29 +275,34 @@ public class BookService {
         if (!imageDownloadFailedBooks.isEmpty()) {
             bookRepository.saveAll(imageDownloadFailedBooks);
             doDownload(imageDownloadFailedBooks);
-            bookRepository.saveAll(imageDownloadFailedBooks);
         }
 
     }
 
-    public byte[] downloadImage(URL imageUrl) {
+    public byte[] downloadImage(URL imageUrl) throws IOException {
 
         byte[] imageByteArray = new byte[0];
-        try (BufferedInputStream bufferedInputStream = new BufferedInputStream(imageUrl.openStream())){
-            imageByteArray = IOUtils.toByteArray(bufferedInputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
+        HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
+        if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+            try (BufferedInputStream bufferedInputStream = new BufferedInputStream(imageUrl.openStream())) {
+                imageByteArray = IOUtils.toByteArray(bufferedInputStream);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return imageByteArray;
     }
 
     private Path createThumbnail(BufferedImage image,
                                  Path directory,
-                                 String filename) throws IOException {
+                                 String filename,
+                                 String imageExtension) throws IOException {
+
+        Path thumbnailPath = Paths.get(directory + File.separator + "thumbnail-" + filename + ".jpg");
 
         int width = 128;
         int height = 128;
-        Path thumbnailPath = Paths.get(directory + File.separator + "thumbnail-" + filename + ".jpg");
+
 
         double outputAspect = 1.0 * width / height;
         double inputAspect = 1.0 * image.getWidth() / image.getHeight();
@@ -307,13 +314,13 @@ public class BookService {
 
         BufferedImage thumbnail = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         thumbnail.createGraphics().drawImage(image.getScaledInstance(width, height, Image.SCALE_SMOOTH), 0, 0, null);
-        ImageIO.write(thumbnail, "jpg", thumbnailPath.toFile());
+        ImageIO.write(thumbnail, imageExtension, thumbnailPath.toFile());
 
         return thumbnailPath;
     }
 
-
-    private void doDownload(List<BookEntity> bookEntitiesForImageDownload) throws IOException {
+    @Transactional(rollbackFor = Throwable.class)
+    public void doDownload(List<BookEntity> bookEntitiesForImageDownload) throws IOException {
 
         Path coverImagesDirectory = Files.createDirectories(Paths.get(coverImagesFolderPath));
         Path thumbnailImagesDirectory = Files.createDirectories(Paths.get(thumbnailImagesFolderPath));
@@ -326,32 +333,38 @@ public class BookService {
             try (FileOutputStream outputStream = new FileOutputStream(imagePath.toString())) {
 
                 byte[] imageByteArray = downloadImage(new URL(bookEntity.getBookImage().getImageURLLarge()));
-                outputStream.write(imageByteArray);
 
-                File coverImage = imagePath.toFile();
+                String contentType = URLConnection.guessContentTypeFromStream(new ByteArrayInputStream(imageByteArray));
 
-                Path thumbnailPath = createThumbnail(
-                        ImageIO.read(coverImage), thumbnailImagesDirectory, imageName);
+                if (contentType.equals("image/jpeg")) {
 
-                BookImageEntity bookImageEntity = BookImageEntity.builder()
-                        .coverImagePath(imagePath.toString())
-                        .thumbnailPath(thumbnailPath.toString())
-                        .coverImageSizeBytes(Files.size(imagePath))
-                        .thumbnailSizeBytes(Files.size(thumbnailPath))
-                        .type(FilenameUtils.getExtension(coverImage.getName()))
-                        .build();
+                    outputStream.write(imageByteArray);
+                    File coverImage = imagePath.toFile();
+                    FileInputStream inputStream = new FileInputStream(coverImage);
+                    String imageExtension = FilenameUtils.getExtension(coverImage.getName());
 
-                bookEntity.setBookImage(bookImageEntity);
-                bookEntity.getBookImage().setImageDownloadStatus(BookImageDownloadStatus.DONE);
 
+                    Path thumbnailPath = createThumbnail(ImageIO.read(inputStream),
+                            thumbnailImagesDirectory, imageName, imageExtension);
+
+                    BookImageEntity bookImageEntity = bookEntity.getBookImage();
+                    bookImageEntity.setType(imageExtension);
+                    bookImageEntity.setCoverImagePath(imagePath.toString());
+                    bookImageEntity.setThumbnailPath(thumbnailPath.toString());
+                    bookImageEntity.setCoverImageSizeBytes(coverImage.length());
+                    bookImageEntity.setThumbnailSizeBytes(thumbnailPath.toFile().length());
+                    bookImageEntity.setImageDownloadStatus(BookImageDownloadStatus.DONE);
+
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         });
 
+        bookRepository.saveAll(bookEntitiesForImageDownload);
+
     }
-    
+
     private <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
         Set<Object> keySet = ConcurrentHashMap.newKeySet();
         return t -> keySet.add(keyExtractor.apply(t));

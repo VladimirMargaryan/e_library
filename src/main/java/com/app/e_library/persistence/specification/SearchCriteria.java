@@ -2,7 +2,6 @@ package com.app.e_library.persistence.specification;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @Builder

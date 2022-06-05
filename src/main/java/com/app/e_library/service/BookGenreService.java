@@ -45,7 +45,7 @@ public class BookGenreService {
     }
 
     @Transactional
-    public void removeById(Long id) {
+    public void deleteById(Long id) {
         bookGenreRepository.deleteById(id);
     }
 }

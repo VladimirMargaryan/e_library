@@ -12,7 +12,6 @@ import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.Objects;
 
@@ -71,14 +70,6 @@ public class UserEntity {
     @Column(name = "phone", nullable = false)
     @ValidPhone
     private String phone;
-
-    @Transient
-    @Size(min = 24, max = 24)
-    private String resetPasswordToken;
-
-    @Transient
-    @Valid
-    private Long resetPasswordTokenCreationDate;
 
     @OneToOne(cascade = ALL, fetch = LAZY, orphanRemoval = true)
     @JoinColumn(name = "address_id", nullable = false)

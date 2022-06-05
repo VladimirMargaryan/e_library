@@ -7,7 +7,6 @@ import com.app.e_library.service.UserService;
 import com.app.e_library.service.dto.UserDto;
 import com.app.e_library.validation.UserValidator;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
