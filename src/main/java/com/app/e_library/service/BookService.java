@@ -41,6 +41,11 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static com.app.e_library.service.dto.BookImageDownloadStatus.*;
+import static java.awt.Image.SCALE_SMOOTH;
+import static java.awt.image.BufferedImage.TYPE_INT_RGB;
+import static java.net.HttpURLConnection.HTTP_OK;
+
 @Service
 public class BookService {
 
@@ -250,10 +255,10 @@ public class BookService {
 
 
         List<BookEntity> firstNBooksByImageDownloadStatus =
-                bookRepository.getFirstNBooksByImageDownloadStatus(Pageable.ofSize(1000));
+                bookRepository.getFirstNBooksByImageDownloadStatus(Pageable.ofSize(500));
 
         firstNBooksByImageDownloadStatus.forEach(bookEntity -> {
-            bookEntity.getBookImage().setImageDownloadStatus(BookImageDownloadStatus.IN_PROGRESS);
+            bookEntity.getBookImage().setImageDownloadStatus(IN_PROGRESS);
             bookEntity.getBookImage().setImageDownloadStartTime(System.currentTimeMillis());
         });
 
@@ -281,15 +286,22 @@ public class BookService {
 
     public byte[] downloadImage(URL imageUrl) throws IOException {
 
-        byte[] imageByteArray = new byte[0];
-        HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
-        if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+        byte[] imageByteArray = new byte[1024];
             try (BufferedInputStream bufferedInputStream = new BufferedInputStream(imageUrl.openStream())) {
                 imageByteArray = IOUtils.toByteArray(bufferedInputStream);
+
+                byte firstByte = (byte) 0xFF;
+                byte secondByte = (byte) 0xD8;
+
+                if (imageByteArray[0] != firstByte || imageByteArray[1] != secondByte){
+                    BufferedImage image = ImageIO.read( new ByteArrayInputStream( imageByteArray ) );
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    ImageIO.write( image, "jpeg", byteArrayOutputStream );
+                    imageByteArray = byteArrayOutputStream.toByteArray();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
         return imageByteArray;
     }
 
@@ -312,8 +324,8 @@ public class BookService {
         else
             width = (int) (height * inputAspect);
 
-        BufferedImage thumbnail = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        thumbnail.createGraphics().drawImage(image.getScaledInstance(width, height, Image.SCALE_SMOOTH), 0, 0, null);
+        BufferedImage thumbnail = new BufferedImage(width, height, TYPE_INT_RGB);
+        thumbnail.createGraphics().drawImage(image.getScaledInstance(width, height, SCALE_SMOOTH), 0, 0, null);
         ImageIO.write(thumbnail, imageExtension, thumbnailPath.toFile());
 
         return thumbnailPath;
@@ -327,34 +339,36 @@ public class BookService {
 
         bookEntitiesForImageDownload.forEach(bookEntity -> {
 
+            BookImageEntity bookImageEntity = bookEntity.getBookImage();
             String imageName = bookEntity.getId().toString();
             Path imagePath = Paths.get(coverImagesDirectory + File.separator + "image-" + imageName + ".jpg");
 
             try (FileOutputStream outputStream = new FileOutputStream(imagePath.toString())) {
 
-                byte[] imageByteArray = downloadImage(new URL(bookEntity.getBookImage().getImageURLLarge()));
+                URL imageUrl = new URL(bookEntity.getBookImage().getImageURLLarge());
+                HttpURLConnection connection = (HttpURLConnection) imageUrl.openConnection();
 
-                String contentType = URLConnection.guessContentTypeFromStream(new ByteArrayInputStream(imageByteArray));
+                if (connection.getResponseCode() == HTTP_OK && connection.getContentType().equals("image/jpeg")) {
 
-                if (contentType.equals("image/jpeg")) {
+                    byte[] imageByteArray = downloadImage(imageUrl);
 
                     outputStream.write(imageByteArray);
                     File coverImage = imagePath.toFile();
-                    FileInputStream inputStream = new FileInputStream(coverImage);
                     String imageExtension = FilenameUtils.getExtension(coverImage.getName());
 
-
-                    Path thumbnailPath = createThumbnail(ImageIO.read(inputStream),
+                    Path thumbnailPath = createThumbnail(ImageIO.read(coverImage),
                             thumbnailImagesDirectory, imageName, imageExtension);
 
-                    BookImageEntity bookImageEntity = bookEntity.getBookImage();
                     bookImageEntity.setType(imageExtension);
                     bookImageEntity.setCoverImagePath(imagePath.toString());
                     bookImageEntity.setThumbnailPath(thumbnailPath.toString());
                     bookImageEntity.setCoverImageSizeBytes(coverImage.length());
                     bookImageEntity.setThumbnailSizeBytes(thumbnailPath.toFile().length());
-                    bookImageEntity.setImageDownloadStatus(BookImageDownloadStatus.DONE);
+                    bookImageEntity.setImageDownloadStatus(DONE);
 
+                } else {
+                    bookEntity.getBookImage().setImageDownloadStartTime(null);
+                    bookImageEntity.setImageDownloadStatus(NOT_SUPPORTED);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
