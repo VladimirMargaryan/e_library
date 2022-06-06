@@ -24,7 +24,7 @@ public class JWTUtil {
     @Value("${jwt.access_token.active.time}")
     private Duration accessTokenActiveTime;
 
-    // 1 day
+    // 7 day
     @Value("${jwt.refresh_token.active.time}")
     private Duration refreshTokenActiveTime;
 
@@ -49,7 +49,7 @@ public class JWTUtil {
                 .withSubject(user.getEmail())
                 .withExpiresAt(new Date(System.currentTimeMillis() + accessTokenActiveTime.toMillis()))
                 .withIssuer(request.getRequestURL().toString())
-                .withClaim("ROLE", Collections.singletonList(user.getRole().getRollName()))
+                .withClaim("ROLE", user.getRole().getRollName())
                 .sign(getAlgorithm());
     }
 

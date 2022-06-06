@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.*;
+
 @Builder
 @Getter
 @Setter
@@ -15,7 +17,7 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(NON_NULL)
 public class BookDto {
 
     private Long id;
@@ -32,7 +34,8 @@ public class BookDto {
 
     public BookDto(Long id, String isbn, String title, short publicationYear,
                    int pageCount, BookStatusType bookStatus, String imageUrlLarge,
-                   String imageUrlSmall, String genre, String author, String publisher) {
+                   String coverImagePath, String thumbnailPath, String imageUrlSmall,
+                   String genre, String author, String publisher) {
 
         this.id = id;
         this.isbn = isbn;
@@ -45,6 +48,8 @@ public class BookDto {
                 .builder()
                 .imageURLSmall(imageUrlSmall)
                 .imageURLLarge(imageUrlLarge)
+                .coverImagePath(coverImagePath)
+                .thumbnailPath(thumbnailPath)
                 .build();
 
         this.bookGenre = BookGenreDto
@@ -74,9 +79,11 @@ public class BookDto {
                 .pageCount(bookEntity.getPageCount())
                 .bookGenre(BookGenreDto.mapToDto(bookEntity.getBookGenre()))
                 .bookStatus(bookEntity.getBookStatus())
+
                 .pickDetail(bookEntity.getPickDetail() == null ? PickDetailDto
                         .builder()
                         .build() : PickDetailDto.mapToDto(bookEntity.getPickDetail()))
+
                 .publisher(PublisherDto.mapToDto(bookEntity.getPublisher()))
                 .author(AuthorDto.mapToDto(bookEntity.getAuthor()))
                 .imageDto(BookImageDto.mapToDto(bookEntity.getBookImage()))
@@ -93,21 +100,27 @@ public class BookDto {
                 .publicationYear(bookDto.getPublicationYear())
                 .pageCount(bookDto.getPageCount())
                 .bookStatus(bookDto.getBookStatus())
+
                 .bookGenre(bookDto.getBookGenre() == null ? BookGenreEntity
                         .builder()
                         .build() : BookGenreDto.mapToEntity(bookDto.getBookGenre()))
+
                 .pickDetail(bookDto.getPickDetail() == null ? PickDetailEntity
                         .builder()
                         .build() : PickDetailDto.mapToEntity(bookDto.getPickDetail()))
+
                 .publisher(bookDto.getPublisher() == null ? PublisherEntity
                         .builder()
                         .build() : PublisherDto.mapToEntity(bookDto.getPublisher()))
+
                 .author(bookDto.getAuthor() == null ? AuthorEntity
                         .builder()
                         .build() : AuthorDto.mapToEntity(bookDto.getAuthor()))
+
                 .bookImage(bookDto.getImageDto() == null ? BookImageEntity
                         .builder()
                         .build() : BookImageDto.mapToEntity(bookDto.getImageDto()))
+
                 .build();
     }
 

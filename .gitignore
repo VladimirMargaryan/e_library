@@ -3,6 +3,9 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+/book_cover_images/
+/book_thumbnail_images/
+
 
 ### STS ###
 .apt_generated

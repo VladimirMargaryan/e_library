@@ -13,9 +13,8 @@ import com.app.e_library.persistence.pagination.PageRequest;
 import com.app.e_library.persistence.pagination.PageResponse;
 import com.app.e_library.persistence.pagination.UserSearchCriteria;
 import com.app.e_library.service.dto.*;
+import com.app.e_library.util.CsvFileReader;
 import lombok.AllArgsConstructor;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,14 +22,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static com.app.e_library.service.dto.UserStatusType.VERIFIED;
+import static com.app.e_library.util.ObjectUtil.distinctByField;
+import static com.app.e_library.util.CsvFileReader.getInstance;
 
 @Service
 @AllArgsConstructor
@@ -112,26 +111,11 @@ public class UserService {
         return userByEmail != null ? UserDto.mapToDto(userByEmail) : null;
     }
 
-    private List<CSVRecord> readFile(MultipartFile file) {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
-            CSVParser csvParser =
-                    CSVFormat.newFormat(';')
-                            .withFirstRecordAsHeader()
-                            .withIgnoreEmptyLines(true)
-                            .withTrim()
-                            .parse(reader);
-
-            return csvParser.getRecords();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return null;
-    }
-
     @Transactional
     public void uploadUsers(MultipartFile usersFile) {
 
-        List<CSVRecord> csvRecords = readFile(usersFile);
+        CsvFileReader csvReader = getInstance();
+        List<CSVRecord> csvRecords = csvReader.readFile(usersFile);
 
         List<UserEntity> userEntities = new ArrayList<>();
         List<AddressEntity> addressEntities = new ArrayList<>();
@@ -166,9 +150,6 @@ public class UserService {
                         .streetNumber(streetNumber)
                         .build();
 
-                cityEntities.add(cityEntity);
-                addressEntities.add(addressEntity);
-
                 userEntity = UserEntity
                         .builder()
                         .firstname(firstname)
@@ -179,11 +160,13 @@ public class UserService {
                         .registrationDate(registrationDate)
                         .phone(phoneNumber)
                         .address(addressEntity)
-                        .userStatus(UserStatusType.VERIFIED)
+                        .userStatus(VERIFIED)
                         .role(roleEntity)
                         .build();
 
                 userEntities.add(userEntity);
+                cityEntities.add(cityEntity);
+                addressEntities.add(addressEntity);
             }
         }
         saveUsers(userEntities, addressEntities, cityEntities);
@@ -196,7 +179,7 @@ public class UserService {
         // filtering and saving cities
         Map<String, CityEntity> savedCityEntities = cityRepository
                 .saveAll(cityEntities.stream()
-                        .filter(distinctByKey(CityEntity::getName))
+                        .filter(distinctByField(CityEntity::getName))
                         .collect(Collectors.toList()))
                 .stream()
                 .collect(Collectors.toMap(CityEntity::getName, Function.identity()));
@@ -211,11 +194,6 @@ public class UserService {
         AtomicInteger i = new AtomicInteger();
         userEntities.forEach(userEntity -> userEntity.setAddress(savedAddressEntities.get(i.getAndIncrement())));
         userRepository.saveAll(userEntities);
-    }
-
-    private  <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
-        Set<Object> keySet = ConcurrentHashMap.newKeySet();
-        return t -> keySet.add(keyExtractor.apply(t));
     }
 
 }

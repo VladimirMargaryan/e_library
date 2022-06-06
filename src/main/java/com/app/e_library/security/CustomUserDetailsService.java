@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Collection;
 
-@Component("userDetailsService")
+@Component
 @AllArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 

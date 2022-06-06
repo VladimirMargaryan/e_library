@@ -31,8 +31,8 @@ public interface BookRepository extends JpaRepository<BookEntity, Long>, JpaSpec
 
 
     @Query("select new com.app.e_library.service.dto.BookDto(b.id, b.isbn, b.title, " +
-            "b.publicationYear, b.pageCount, b.bookStatus, i.imageURLLarge, i.imageURLSmall, g.name, " +
-            "a.name, p.publisherName) from BookEntity b " +
+            "b.publicationYear, b.pageCount, b.bookStatus, i.imageURLLarge, i.imageURLSmall," +
+            " i.coverImagePath, i.thumbnailPath, g.name, a.name, p.publisherName) from BookEntity b " +
             "inner join b.bookGenre g " +
             "inner join b.publisher p " +
             "inner join b.author a " +

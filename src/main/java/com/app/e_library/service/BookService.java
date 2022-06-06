@@ -10,10 +10,7 @@ import com.app.e_library.persistence.pagination.BookSearchCriteria;
 import com.app.e_library.persistence.pagination.PageRequest;
 import com.app.e_library.persistence.pagination.PageResponse;
 import com.app.e_library.service.dto.BookDto;
-import com.app.e_library.service.dto.BookImageDownloadStatus;
-import com.app.e_library.service.dto.BookStatusType;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
+import com.app.e_library.util.CsvFileReader;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -25,26 +22,25 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.app.e_library.service.dto.BookImageDownloadStatus.*;
+import static com.app.e_library.service.dto.BookStatusType.CHECKED_IN;
 import static java.awt.Image.SCALE_SMOOTH;
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import static java.net.HttpURLConnection.HTTP_OK;
+import static com.app.e_library.util.ObjectUtil.distinctByField;
+import static com.app.e_library.util.CsvFileReader.getInstance;
 
 @Service
 public class BookService {
@@ -130,26 +126,11 @@ public class BookService {
         bookRepository.deleteById(id);
     }
 
-    private List<CSVRecord> readFile(MultipartFile file) {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
-            CSVParser csvParser =
-                    CSVFormat.newFormat(';')
-                            .withFirstRecordAsHeader()
-                            .withIgnoreEmptyLines(true)
-                            .withTrim()
-                            .parse(reader);
-
-            return csvParser.getRecords();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return null;
-    }
-
     @Transactional
     public void uploadBooks(MultipartFile booksFile) {
 
-        List<CSVRecord> csvRecords = readFile(booksFile);
+        CsvFileReader csvReader = getInstance();
+        List<CSVRecord> csvRecords = csvReader.readFile(booksFile);
 
         Random random = new Random();
 
@@ -183,14 +164,11 @@ public class BookService {
                 BookGenreEntity bookGenreEntity = bookGenreEntities.get(random.nextInt(bookGenreEntities.size()));
 
                 BookImageEntity bookImageEntity = BookImageEntity.builder()
-                        .imageDownloadStatus(BookImageDownloadStatus.TODO)
+                        .imageDownloadStatus(TODO)
                         .imageURLSmall(imageURLSmall)
                         .imageURLMedium(imageURLMedium)
                         .imageURLLarge(imageURLLarge)
                         .build();
-
-                publisherEntities.add(publisherEntity);
-                authorEntities.add(authorEntity);
 
                 bookEntity = BookEntity.builder()
                         .isbn(isbn)
@@ -198,13 +176,15 @@ public class BookService {
                         .publicationYear(publicationYear)
                         .pageCount(pageCount)
                         .bookGenre(bookGenreEntity)
-                        .bookStatus(BookStatusType.CHECKED_IN)
+                        .bookStatus(CHECKED_IN)
                         .publisher(publisherEntity)
                         .author(authorEntity)
                         .bookImage(bookImageEntity)
                         .build();
 
                 bookEntities.add(bookEntity);
+                publisherEntities.add(publisherEntity);
+                authorEntities.add(authorEntity);
 
             }
         }
@@ -217,14 +197,14 @@ public class BookService {
 
         // filtering Books
         List<BookEntity> uniqueBookEntities = bookEntities.stream()
-                .filter(distinctByKey(bookDto ->
+                .filter(distinctByField(bookDto ->
                         bookDto.getIsbn().toLowerCase()))
                 .collect(Collectors.toList());
 
         // filtering and saving Publishers
         Map<String, PublisherEntity> savedPublisherEntities = publisherRepository
                 .saveAll(publisherEntities.stream()
-                        .filter(distinctByKey(publisherDto ->
+                        .filter(distinctByField(publisherDto ->
                                 publisherDto.getPublisherName().toLowerCase()))
                         .collect(Collectors.toList()))
                 .stream()
@@ -234,7 +214,7 @@ public class BookService {
         // filtering and saving Authors
         Map<String, AuthorEntity> savedAuthorEntities = authorRepository
                 .saveAll(authorEntities.stream()
-                        .filter(distinctByKey(authorDto ->
+                        .filter(distinctByField(authorDto ->
                                 authorDto.getName().toLowerCase()))
                         .collect(Collectors.toList()))
                 .stream()
@@ -282,53 +262,6 @@ public class BookService {
             doDownload(imageDownloadFailedBooks);
         }
 
-    }
-
-    public byte[] downloadImage(URL imageUrl) throws IOException {
-
-        byte[] imageByteArray = new byte[1024];
-            try (BufferedInputStream bufferedInputStream = new BufferedInputStream(imageUrl.openStream())) {
-                imageByteArray = IOUtils.toByteArray(bufferedInputStream);
-
-                byte firstByte = (byte) 0xFF;
-                byte secondByte = (byte) 0xD8;
-
-                if (imageByteArray[0] != firstByte || imageByteArray[1] != secondByte){
-                    BufferedImage image = ImageIO.read( new ByteArrayInputStream( imageByteArray ) );
-                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                    ImageIO.write( image, "jpeg", byteArrayOutputStream );
-                    imageByteArray = byteArrayOutputStream.toByteArray();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        return imageByteArray;
-    }
-
-    private Path createThumbnail(BufferedImage image,
-                                 Path directory,
-                                 String filename,
-                                 String imageExtension) throws IOException {
-
-        Path thumbnailPath = Paths.get(directory + File.separator + "thumbnail-" + filename + ".jpg");
-
-        int width = 128;
-        int height = 128;
-
-
-        double outputAspect = 1.0 * width / height;
-        double inputAspect = 1.0 * image.getWidth() / image.getHeight();
-
-        if (outputAspect < inputAspect)
-            height = (int) (width / inputAspect);
-        else
-            width = (int) (height * inputAspect);
-
-        BufferedImage thumbnail = new BufferedImage(width, height, TYPE_INT_RGB);
-        thumbnail.createGraphics().drawImage(image.getScaledInstance(width, height, SCALE_SMOOTH), 0, 0, null);
-        ImageIO.write(thumbnail, imageExtension, thumbnailPath.toFile());
-
-        return thumbnailPath;
     }
 
     @Transactional(rollbackFor = Throwable.class)
@@ -379,8 +312,50 @@ public class BookService {
 
     }
 
-    private <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
-        Set<Object> keySet = ConcurrentHashMap.newKeySet();
-        return t -> keySet.add(keyExtractor.apply(t));
+
+    public byte[] downloadImage(URL imageUrl) throws IOException {
+
+        byte[] imageByteArray = new byte[0];
+            try (BufferedInputStream bufferedInputStream = new BufferedInputStream(imageUrl.openStream())) {
+                imageByteArray = IOUtils.toByteArray(bufferedInputStream);
+
+                byte firstByte = (byte) 0xFF;
+                byte secondByte = (byte) 0xD8;
+
+                if (imageByteArray[0] != firstByte || imageByteArray[1] != secondByte){
+                    BufferedImage image = ImageIO.read( new ByteArrayInputStream( imageByteArray ));
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    ImageIO.write( image, "jpeg", byteArrayOutputStream );
+                    imageByteArray = byteArrayOutputStream.toByteArray();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        return imageByteArray;
+    }
+
+    private Path createThumbnail(BufferedImage image,
+                                 Path directory,
+                                 String filename,
+                                 String imageExtension) throws IOException {
+
+        Path thumbnailPath = Paths.get(directory + File.separator + "thumbnail-" + filename + ".jpg");
+
+        int width = 128;
+        int height = 128;
+
+        double outputAspect = 1.0 * width / height;
+        double inputAspect = 1.0 * image.getWidth() / image.getHeight();
+
+        if (outputAspect < inputAspect)
+            height = (int) (width / inputAspect);
+        else
+            width = (int) (height * inputAspect);
+
+        BufferedImage thumbnail = new BufferedImage(width, height, TYPE_INT_RGB);
+        thumbnail.createGraphics().drawImage(image.getScaledInstance(width, height, SCALE_SMOOTH), 0, 0, null);
+        ImageIO.write(thumbnail, imageExtension, thumbnailPath.toFile());
+
+        return thumbnailPath;
     }
 }

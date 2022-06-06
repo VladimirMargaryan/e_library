@@ -7,17 +7,17 @@ import com.app.e_library.service.BookService;
 import com.app.e_library.service.dto.BookDto;
 import com.app.e_library.validation.BookValidator;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Objects;
+
+import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.MediaType.*;
 
 @RestController
 @RequestMapping("/books")
@@ -30,9 +30,9 @@ public class BookController {
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<?> uploadBooks(@RequestParam("books") MultipartFile books) {
         if (books.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Bad request!");
+            return ResponseEntity.status(NO_CONTENT).body("Bad request!");
         } else if(!Objects.equals(books.getContentType(), "text/csv")){
-            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
+            return ResponseEntity.status(UNSUPPORTED_MEDIA_TYPE).build();
         }
         bookService.uploadBooks(books);
         return ResponseEntity.ok().body("Books saved successfully!");
@@ -59,9 +59,9 @@ public class BookController {
     public ResponseEntity<BookDto> createBook(@RequestBody BookDto book) {
         if (BookValidator.isValid(book)) {
             BookDto savedBookDto = bookService.save(book);
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedBookDto);
+            return ResponseEntity.status(CREATED).body(savedBookDto);
         }
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(NO_CONTENT).build();
     }
 
     @GetMapping("/{bookId}")
@@ -78,7 +78,7 @@ public class BookController {
             BookDto updatedBook = bookService.update(bookId, book);
             return ResponseEntity.ok().body(updatedBook);
         }
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(NO_CONTENT).build();
     }
 
     @DeleteMapping("/{bookId}")
@@ -89,7 +89,7 @@ public class BookController {
     }
 
     @GetMapping(value = "/image",
-            produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_GIF_VALUE})
+            produces = {IMAGE_JPEG_VALUE, IMAGE_PNG_VALUE, IMAGE_GIF_VALUE})
     @PreAuthorize("hasAnyRole('EMPLOYEE', 'USER')")
     public ResponseEntity<byte[]> downloadBookImage(String url) throws IOException {
         return ResponseEntity.ok().body(bookService.downloadImage(new URL(url)));

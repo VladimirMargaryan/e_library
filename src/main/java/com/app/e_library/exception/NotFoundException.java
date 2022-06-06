@@ -1,9 +1,10 @@
 package com.app.e_library.exception;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+
+@ResponseStatus(NOT_FOUND)
 public class NotFoundException extends RuntimeException {
 
     public NotFoundException() {

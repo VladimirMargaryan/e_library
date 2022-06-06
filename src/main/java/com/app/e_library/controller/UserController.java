@@ -7,13 +7,14 @@ import com.app.e_library.service.UserService;
 import com.app.e_library.service.dto.UserDto;
 import com.app.e_library.validation.UserValidator;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Objects;
+
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping("/users")
@@ -28,11 +29,11 @@ public class UserController {
     public ResponseEntity<?> uploadUsers(@RequestParam("users") MultipartFile users) {
 
         if (users.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bad request!");
+            return ResponseEntity.status(BAD_REQUEST).body("Bad request!");
         }
 
         if (!Objects.equals(users.getContentType(), "text/csv")){
-            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
+            return ResponseEntity.status(UNSUPPORTED_MEDIA_TYPE).build();
         }
         
         userService.uploadUsers(users);
@@ -60,9 +61,9 @@ public class UserController {
     @PreAuthorize("permitAll()")
     public ResponseEntity<UserDto> createUserProfile(@RequestBody UserDto user) {
         if (UserValidator.isValid(user)) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(userService.save(user));
+            return ResponseEntity.status(CREATED).body(userService.save(user));
         }
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(NO_CONTENT).build();
     }
 
     @GetMapping("/{userId}")
@@ -79,7 +80,7 @@ public class UserController {
             UserDto updateUser = userService.update(userId, user);
             return ResponseEntity.ok().body(updateUser);
         }
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(NO_CONTENT).build();
     }
 
     @DeleteMapping("/{userId}")
