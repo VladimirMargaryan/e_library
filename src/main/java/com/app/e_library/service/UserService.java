@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 
 import static com.app.e_library.service.dto.UserStatusType.VERIFIED;
 import static com.app.e_library.util.ObjectUtil.distinctByField;
-import static com.app.e_library.util.CsvFileReader.getInstance;
 
 @Service
 @AllArgsConstructor
@@ -40,6 +39,7 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final CityRepository cityRepository;
     private final AddressRepository addressRepository;
+    private final CsvFileReader csvReader;
 
 
     public PageResponse<UserDto> getAllUsers(PageRequest pageRequest) {
@@ -114,7 +114,6 @@ public class UserService {
     @Transactional
     public void uploadUsers(MultipartFile usersFile) {
 
-        CsvFileReader csvReader = getInstance();
         List<CSVRecord> csvRecords = csvReader.readFile(usersFile);
 
         List<UserEntity> userEntities = new ArrayList<>();

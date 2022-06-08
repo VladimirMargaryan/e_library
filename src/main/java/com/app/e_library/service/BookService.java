@@ -40,7 +40,6 @@ import static java.awt.Image.SCALE_SMOOTH;
 import static java.awt.image.BufferedImage.TYPE_INT_RGB;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static com.app.e_library.util.ObjectUtil.distinctByField;
-import static com.app.e_library.util.CsvFileReader.getInstance;
 
 @Service
 public class BookService {
@@ -49,6 +48,7 @@ public class BookService {
     private final BookGenreRepository bookGenreRepository;
     private final PublisherRepository publisherRepository;
     private final AuthorRepository authorRepository;
+    private final CsvFileReader csvReader;
 
     @Value("${book.image_folder.root}")
     private String coverImagesFolderPath;
@@ -59,12 +59,14 @@ public class BookService {
     public BookService(BookRepository bookRepository,
                        BookGenreRepository bookGenreRepository,
                        PublisherRepository publisherRepository,
-                       AuthorRepository authorRepository) {
+                       AuthorRepository authorRepository,
+                       CsvFileReader csvReader) {
 
         this.bookRepository = bookRepository;
         this.bookGenreRepository = bookGenreRepository;
         this.publisherRepository = publisherRepository;
         this.authorRepository = authorRepository;
+        this.csvReader = csvReader;
     }
 
 
@@ -129,7 +131,6 @@ public class BookService {
     @Transactional
     public void uploadBooks(MultipartFile booksFile) {
 
-        CsvFileReader csvReader = getInstance();
         List<CSVRecord> csvRecords = csvReader.readFile(booksFile);
 
         Random random = new Random();

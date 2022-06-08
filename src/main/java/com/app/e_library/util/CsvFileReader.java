@@ -9,27 +9,9 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.List;
 
-public class CsvFileReader implements FileReader<List<CSVRecord>> {
+public class CsvFileReader {
 
-    private static volatile CsvFileReader INSTANCE;
-
-    private CsvFileReader(){}
-
-    public static CsvFileReader getInstance() {
-
-        if (INSTANCE == null) {
-            synchronized (CsvFileReader.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new CsvFileReader();
-                }
-            }
-        }
-        return INSTANCE;
-    }
-
-    @Override
     public List<CSVRecord> readFile(MultipartFile file) {
-
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
             CSVParser csvParser =
                     CSVFormat.newFormat(';')
