@@ -20,14 +20,11 @@ public interface BookRepository extends JpaRepository<BookEntity, Long>, JpaSpec
 
     @Query("from BookEntity book " +
             "inner join book.bookImage image " +
-            "where image.imageDownloadStatus='TODO'")
-    List<BookEntity> getFirstNBooksByImageDownloadStatus(Pageable pageable);
-
-    @Query("from BookEntity book " +
-            "inner join  book.bookImage image " +
-            "where image.imageDownloadStatus='IN_PROGRESS'" +
-            " and :currentTime > (image.imageDownloadStartTime + 60000)")
-    List<BookEntity> getImageDownloadFailedBooks(@Param("currentTime") Long currentTImeInMillis, Pageable pageable);
+            "where (image.imageDownloadStatus='TODO') or " +
+            "(image.imageDownloadStatus='IN_PROGRESS' and " +
+            ":currentTime > (image.imageDownloadStartTime + (30 * 60 * 1000)))")
+    List<BookEntity> getFirstNBooksByImageDownloadStatus(@Param("currentTime") Long currentTImeInMillis,
+                                                         Pageable pageable);
 
 
     @Query("select new com.app.e_library.service.dto.BookDto(b.id, b.isbn, b.title, " +

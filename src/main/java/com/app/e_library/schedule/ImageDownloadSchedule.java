@@ -10,7 +10,7 @@ import java.io.IOException;
 
 @AllArgsConstructor
 @Component
-public class BookImageDownloadSchedule {
+public class ImageDownloadSchedule {
 
     private final BookService bookService;
 
@@ -18,11 +18,6 @@ public class BookImageDownloadSchedule {
     @Scheduled(fixedRateString = "${job.imageDownloader.fixedRate}")
     public void downloadBookImages() throws IOException {
         bookService.downloadBooksImages();
-    }
-
-    @Scheduled(fixedRateString = "${job.imageDownloader.failover.fixedRate}")
-    public void handleBookImageFailOvers() throws IOException {
-        bookService.handleFailover();
     }
 
 }

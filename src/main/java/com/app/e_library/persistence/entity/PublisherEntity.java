@@ -7,8 +7,6 @@ import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Objects;
 
-import static javax.persistence.CascadeType.ALL;
-import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Getter
@@ -34,11 +32,7 @@ public class PublisherEntity {
     @NotBlank
     private String publisherName;
 
-    @OneToMany(
-            mappedBy = "publisher",
-            cascade = ALL,
-            fetch = LAZY,
-            orphanRemoval = true)
+    @OneToMany(mappedBy = "publisher")
     @ToString.Exclude
     private List<BookEntity> books;
 

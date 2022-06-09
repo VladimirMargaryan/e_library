@@ -92,7 +92,7 @@ public class BookController {
             produces = {IMAGE_JPEG_VALUE, IMAGE_PNG_VALUE, IMAGE_GIF_VALUE})
     @PreAuthorize("hasAnyRole('EMPLOYEE', 'USER')")
     public ResponseEntity<byte[]> downloadBookImage(String url) throws IOException {
-        return ResponseEntity.ok().body(bookService.downloadImage(new URL(url)));
+        return ResponseEntity.ok().body(bookService.getImageByteArrayFromUrl(new URL(url)));
     }
 
 }
