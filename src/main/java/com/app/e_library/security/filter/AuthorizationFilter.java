@@ -36,7 +36,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } else {
             String authorizationHeader = request.getHeader(AUTHORIZATION);
-            if (jwtUtil.validateToken(authorizationHeader)){
+            if (jwtUtil.isTokenValid(authorizationHeader)){
 
                 try {
 

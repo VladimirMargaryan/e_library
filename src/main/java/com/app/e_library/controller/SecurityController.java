@@ -34,7 +34,7 @@ public class SecurityController {
 
         String authorizationHeader = request.getHeader(AUTHORIZATION);
 
-        if (jwtUtil.validateToken(authorizationHeader)){
+        if (jwtUtil.isTokenValid(authorizationHeader)) {
 
             try {
                 String refreshToken = authorizationHeader.substring("Bearer ".length());

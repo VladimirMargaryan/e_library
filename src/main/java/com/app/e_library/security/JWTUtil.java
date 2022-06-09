@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.Collections;
 import java.util.Date;
 import java.util.stream.Collectors;
 
@@ -70,7 +69,7 @@ public class JWTUtil {
         return verifyAndDecode(token).getClaim("ROLE").asArray(String.class);
     }
 
-    public Boolean validateToken(String authorizationHeader) {
+    public Boolean isTokenValid(String authorizationHeader) {
         return (authorizationHeader != null && authorizationHeader.startsWith("Bearer "));
     }
 

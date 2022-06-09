@@ -26,43 +26,34 @@ public class PageResponse<T> {
         this.pageHeaders = buildPageHeaders(page);
     }
 
+    private String buildPageUrl(int pageNumber){
+        return ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .replaceQueryParam("page", pageNumber)
+                .build().toUriString();
+    }
+
 
     private HttpHeaders buildPageHeaders(Page<T> page){
         MultiValueMap<String, String> pageHeadersMap = new LinkedMultiValueMap<>();
 
         if (!page.isFirst() && page.hasPrevious()) {
-            String firstPageUrl = ServletUriComponentsBuilder
-                    .fromCurrentRequest()
-                    .replaceQueryParam("page", 0)
-                    .build().toUriString();
-
+            String firstPageUrl = buildPageUrl(0);
             pageHeadersMap.add("first", firstPageUrl);
         }
 
         if (!page.isLast() && page.hasNext()) {
-            String lastPageUrl = ServletUriComponentsBuilder
-                    .fromCurrentRequest()
-                    .replaceQueryParam("page", page.getTotalPages() - 1)
-                    .build().toUriString();
-
+            String lastPageUrl = buildPageUrl(page.getTotalPages() - 1);
             pageHeadersMap.add("last", lastPageUrl);
         }
 
         if (page.hasPrevious()) {
-            String previousPageUrl = ServletUriComponentsBuilder
-                    .fromCurrentRequest()
-                    .replaceQueryParam("page", page.getNumber() - 1)
-                    .build().toUriString();
-
+            String previousPageUrl = buildPageUrl(page.getNumber() - 1);
             pageHeadersMap.add("prev", previousPageUrl);
         }
 
         if (page.hasNext()) {
-            String nextPageUrl = ServletUriComponentsBuilder
-                    .fromCurrentRequest()
-                    .replaceQueryParam("page", page.getNumber() + 1)
-                    .build().toUriString();
-
+            String nextPageUrl = buildPageUrl(page.getNumber() + 1);
             pageHeadersMap.add("next", nextPageUrl);
         }
 

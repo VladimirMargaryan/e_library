@@ -12,10 +12,10 @@ public class PhoneNumberValidator implements ConstraintValidator<ValidPhone, Str
     }
 
     @Override
-    public boolean isValid(String contactField,
+    public boolean isValid(String phoneNumber,
                            ConstraintValidatorContext cxt) {
-        return contactField != null && contactField.matches(PHONE_PATTERN)
-                && (contactField.length() > 8) && (contactField.length() <= 14);
+        return phoneNumber != null && phoneNumber.matches(PHONE_PATTERN)
+                && (phoneNumber.length() > 8) && (phoneNumber.length() <= 14);
     }
 
 }
