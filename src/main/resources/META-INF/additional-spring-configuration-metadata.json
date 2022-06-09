@@ -26,18 +26,13 @@
       "description": "Description for book.thumbnail_folder.root."
     },
     {
-      "name": "job.imageDownloader.fixedDelay",
+      "name": "job.imageUtil.fixedDelay",
       "type": "java.lang.String",
-      "description": "Description for job.imageDownloader.fixedDelay."
+      "description": "Description for job.imageUtil.fixedDelay."
     },
     {
-      "name": "job.imageDownloader.fixedRate",
+      "name": "job.imageUtil.fixedRate",
       "type": "java.lang.String",
-      "description": "Description for job.imageDownloader.fixedRate."
-    },
-    {
-      "name": "job.imageDownloader.failover.fixedRate",
-      "type": "java.lang.String",
-      "description": "Description for job.imageDownloader.failover.fixedRate."
+      "description": "Description for job.imageUtil.fixedRate."
     }
   ] }
